@@ -25,7 +25,7 @@ public class LocationTest extends TestBase {
     @Test
     public void testDeserialize() throws IOException {
         final Locations locations = OBJECT_MAPPER.readValue(JSON, new TypeReference<Locations>() {});
-        assertThat(locations.getLocationMap().size(), is(2));
+        assertThat(locations.getLocations().size(), is(2));
 
         final Location norway = ImmutableLocation.builder()
                 .id(39)
@@ -39,7 +39,7 @@ public class LocationTest extends TestBase {
                         Metrics.RECOVERED, 1))
                 .build();
 
-        final Location result = locations.getLocationMap().get(CountryCode.NO);
+        final Location result = locations.getLocations().get(1);
         assertThat(result, is(norway));
     }
 

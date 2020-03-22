@@ -1,8 +1,6 @@
 package com.jacoblucas.covid19tracker.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.collect.Maps;
-import com.neovisionaries.i18n.CountryCode;
 import org.immutables.value.Value;
 
 import java.util.List;
@@ -15,9 +13,4 @@ public abstract class Locations {
     public abstract Map<String, Integer> getLatest();
 
     public abstract List<Location> getLocations();
-
-    @Value.Derived
-    public Map<CountryCode, Location> getLocationMap() {
-        return Maps.uniqueIndex(getLocations(), Location::getCountryCode);
-    }
 }
