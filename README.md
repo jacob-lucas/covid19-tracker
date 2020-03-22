@@ -3,4 +3,4 @@ A personal project built to track the worldwide spread of the Coronavirus, start
 
 # Build Status
 [![Build Status](https://travis-ci.com/jacob-lucas/covid19-tracker.svg?branch=master)](https://travis-ci.com/jacob-lucas/covid19-tracker)
-[![Coverage Status](TBD)](TBD)
+[![Coverage Status](https://coveralls.io/repos/github/jacob-lucas/covid19-tracker/badge.svg?branch=master)](https://coveralls.io/github/jacob-lucas/covid19-tracker?branch=master)
