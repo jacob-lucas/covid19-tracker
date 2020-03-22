@@ -21,8 +21,8 @@ repositories {
 
 dependencies {
     compile "org.immutables:value:${immutablesVersion}"
+    compile "org.apache.httpcomponents:fluent-hc:${apacheHttpVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
-    compile "com.neovisionaries:nv-i18n:${nvVersion}"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"

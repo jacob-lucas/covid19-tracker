@@ -2,7 +2,6 @@ package com.jacoblucas.covid19tracker.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.neovisionaries.i18n.CountryCode;
 import org.immutables.value.Value;
 
 import java.time.Instant;
@@ -14,13 +13,10 @@ import java.util.Map;
 public abstract class Location {
     public abstract int getId();
 
-    @Value.Derived
-    public String getCountry() {
-        return getCountryCode().getName();
-    }
+    public abstract String getCountry();
 
     @JsonProperty("country_code")
-    public abstract CountryCode getCountryCode();
+    public abstract String getCountryCode();
 
     public abstract String getProvince();
 

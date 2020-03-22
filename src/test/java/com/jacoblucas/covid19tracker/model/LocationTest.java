@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.TestBase;
 import com.jacoblucas.covid19tracker.utils.InputReader;
-import com.neovisionaries.i18n.CountryCode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -29,7 +28,8 @@ public class LocationTest extends TestBase {
 
         final Location norway = ImmutableLocation.builder()
                 .id(39)
-                .countryCode(CountryCode.NO)
+                .country("Norway")
+                .countryCode("NO")
                 .province("")
                 .lastUpdated(Instant.parse("2020-03-21T06:59:11.315422Z"))
                 .coordinates(ImmutableCoordinates.of(60.472F, 8.4689F))
