@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.http.client.fluent.Request;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class HttpClient {
 
     String toQuerystring(final Map<String, String> querystringMap) {
         return "?" + querystringMap.entrySet().stream()
-                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .map(entry -> entry.getKey() + "=" + URLEncoder.encode(entry.getValue()))
                 .collect(Collectors.joining("&"));
     }
 }
