@@ -22,6 +22,13 @@ repositories {
 dependencies {
     compile "org.immutables:value:${immutablesVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
+    compile "com.neovisionaries:nv-i18n:${nvVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"
+    compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
     annotationProcessor "org.immutables:value:${immutablesVersion}"
 
