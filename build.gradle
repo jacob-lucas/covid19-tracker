@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id "com.gradle.build-scan" version "3.1"
+    id 'com.github.kt3k.coveralls' version "2.8.4"
+}
+
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
+}
+
+group 'com.jacoblucas'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.immutables:value:${immutablesVersion}"
+    compile "com.google.guava:guava:${guavaVersion}"
+
+    annotationProcessor "org.immutables:value:${immutablesVersion}"
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
+    testCompile 'org.hamcrest:hamcrest:2.2'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
+coveralls {
+    jacocoReportPath 'build/reports/jacoco/test/jacocoTestReport.xml'
+}
