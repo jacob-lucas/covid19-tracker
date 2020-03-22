@@ -34,15 +34,18 @@ public class Covid19Adapter {
 
     public Locations getAllLocations(final boolean includeTimelines) throws IOException {
         final Map<String, String> querystringMap = ImmutableMap.of("timelines", includeTimelines ? "1" : "0");
-        final String json = httpClient.get(BASE_URL + "locations", querystringMap);
-        return objectMapper.readValue(json, new TypeReference<Locations>() {});
+        return getLocationsWithCustomFilter(querystringMap);
     }
 
     public Locations getLocationsByCountry(final String countryCode, final boolean includeTimelines) throws IOException {
         final Map<String, String> querystringMap = ImmutableMap.of(
                 "timelines", includeTimelines ? "1" : "0",
                 "country_code", countryCode);
-        final String json = httpClient.get(BASE_URL + "locations", querystringMap);
+        return getLocationsWithCustomFilter(querystringMap);
+    }
+
+    public Locations getLocationsWithCustomFilter(final Map<String, String> filterMap) throws IOException {
+        final String json = httpClient.get(BASE_URL + "locations", filterMap);
         return objectMapper.readValue(json, new TypeReference<Locations>() {});
     }
 
