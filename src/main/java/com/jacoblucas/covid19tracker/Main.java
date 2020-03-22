@@ -1,8 +1,8 @@
 package com.jacoblucas.covid19tracker;
 
-import com.jacoblucas.covid19tracker.adapter.Covid19Adapter;
-import com.jacoblucas.covid19tracker.model.Location;
-import com.jacoblucas.covid19tracker.model.Locations;
+import com.jacoblucas.covid19tracker.adapters.Covid19Adapter;
+import com.jacoblucas.covid19tracker.models.Location;
+import com.jacoblucas.covid19tracker.models.Locations;
 
 import java.io.IOException;
 

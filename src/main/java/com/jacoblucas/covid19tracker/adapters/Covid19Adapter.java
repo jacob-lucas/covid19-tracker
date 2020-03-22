@@ -1,4 +1,4 @@
-package com.jacoblucas.covid19tracker.adapter;
+package com.jacoblucas.covid19tracker.adapters;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,8 +7,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.http.HttpClient;
-import com.jacoblucas.covid19tracker.model.Location;
-import com.jacoblucas.covid19tracker.model.Locations;
+import com.jacoblucas.covid19tracker.models.Location;
+import com.jacoblucas.covid19tracker.models.Locations;
 
 import java.io.IOException;
 import java.util.Map;

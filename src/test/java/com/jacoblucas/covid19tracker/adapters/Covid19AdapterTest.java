@@ -1,4 +1,4 @@
-package com.jacoblucas.covid19tracker.adapter;
+package com.jacoblucas.covid19tracker.adapters;
 
 import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.TestBase;
@@ -14,7 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 
-import static com.jacoblucas.covid19tracker.adapter.Covid19Adapter.BASE_URL;
+import static com.jacoblucas.covid19tracker.adapters.Covid19Adapter.BASE_URL;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;

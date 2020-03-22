@@ -1,4 +1,4 @@
-package com.jacoblucas.covid19tracker.model;
+package com.jacoblucas.covid19tracker.models;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.jacoblucas.covid19tracker.TestBase;
