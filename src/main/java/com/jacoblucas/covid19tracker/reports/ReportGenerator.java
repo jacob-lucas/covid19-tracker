@@ -37,6 +37,7 @@ public class ReportGenerator {
         return ImmutableDailyConfirmedCasesDeltaReport.builder()
                 .reportGeneratedAt(Instant.now())
                 .filterMap(filterMap)
+                .currentTotalConfirmed(locations.getLatest().get(Metrics.CONFIRMED))
                 .confirmedCasesDeltas(data)
                 .build();
     }
