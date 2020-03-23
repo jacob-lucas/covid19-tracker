@@ -11,6 +11,8 @@ import java.util.Map;
 public abstract class DailyConfirmedCasesDeltaReport {
     public abstract Instant getReportGeneratedAt();
 
+    public abstract String getSource();
+
     public abstract Map<String, String> getFilterMap();
 
     public abstract int getCurrentTotalConfirmed();

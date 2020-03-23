@@ -32,10 +32,16 @@ public class ReportGenerator {
             customFilter.put("timelines", "1");
         }
 
+        if (!customFilter.containsKey("source")) {
+            customFilter.put("source", "jhu");
+        }
+
+        final String source = customFilter.get("source");
         final Locations locations = covid19Adapter.getLocationsWithCustomFilter(customFilter);
         final List<Pair<Instant, Integer>> data = getConfirmedCasesDeltas(locations);
         return ImmutableDailyConfirmedCasesDeltaReport.builder()
                 .reportGeneratedAt(Instant.now())
+                .source(source)
                 .filterMap(filterMap)
                 .currentTotalConfirmed(locations.getLatest().get(Metrics.CONFIRMED))
                 .confirmedCasesDeltas(data)
