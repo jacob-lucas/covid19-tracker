@@ -1,12 +1,12 @@
-package com.jacoblucas.covid19tracker.reports;
+package com.jacoblucas.covid19tracker.reports.coronavirustrackerapi;
 
-import com.jacoblucas.covid19tracker.adapters.Covid19Adapter;
+import com.jacoblucas.covid19tracker.adapters.CoronaVirusTrackerApiAdapter;
 import com.jacoblucas.covid19tracker.models.ImmutablePair;
-import com.jacoblucas.covid19tracker.models.Location;
-import com.jacoblucas.covid19tracker.models.Locations;
-import com.jacoblucas.covid19tracker.models.Metrics;
 import com.jacoblucas.covid19tracker.models.Pair;
-import com.jacoblucas.covid19tracker.models.Timeline;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Location;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Locations;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Metrics;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Timeline;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -18,10 +18,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ReportGenerator {
-    private final Covid19Adapter covid19Adapter;
+    private final CoronaVirusTrackerApiAdapter coronaVirusTrackerApiAdapter;
 
-    public ReportGenerator(final Covid19Adapter covid19Adapter) {
-        this.covid19Adapter = covid19Adapter;
+    public ReportGenerator(final CoronaVirusTrackerApiAdapter coronaVirusTrackerApiAdapter) {
+        this.coronaVirusTrackerApiAdapter = coronaVirusTrackerApiAdapter;
     }
 
     // TODO: date filtering
@@ -38,7 +38,7 @@ public class ReportGenerator {
         }
 
         final String source = customFilter.get("source");
-        final Locations locations = covid19Adapter.getLocations(customFilter);
+        final Locations locations = coronaVirusTrackerApiAdapter.getLocations(customFilter);
         final List<Pair<Instant, Integer>> data = getConfirmedCasesDeltas(locations);
         return ImmutableDailyConfirmedCasesDeltaReport.builder()
                 .reportGeneratedAt(Instant.now())

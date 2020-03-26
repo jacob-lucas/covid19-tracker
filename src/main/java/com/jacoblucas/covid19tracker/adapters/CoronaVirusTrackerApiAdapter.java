@@ -4,24 +4,24 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.http.HttpClient;
-import com.jacoblucas.covid19tracker.models.Location;
-import com.jacoblucas.covid19tracker.models.Locations;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Location;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Locations;
 import com.jacoblucas.covid19tracker.utils.ObjectMapperFactory;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class Covid19Adapter {
+public class CoronaVirusTrackerApiAdapter {
     public static final String BASE_URL = "https://coronavirus-tracker-api.herokuapp.com/v2/";
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    public Covid19Adapter() {
+    public CoronaVirusTrackerApiAdapter() {
         this(new HttpClient());
     }
 
-    public Covid19Adapter(final HttpClient httpClient) {
+    public CoronaVirusTrackerApiAdapter(final HttpClient httpClient) {
         this.httpClient = httpClient;
         objectMapper = ObjectMapperFactory.getInstance();
     }

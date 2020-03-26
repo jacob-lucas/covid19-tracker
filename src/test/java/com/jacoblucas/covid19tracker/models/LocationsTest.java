@@ -2,6 +2,9 @@ package com.jacoblucas.covid19tracker.models;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.jacoblucas.covid19tracker.TestBase;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Location;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Locations;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Metrics;
 import com.jacoblucas.covid19tracker.utils.InputReader;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -1,7 +1,8 @@
-package com.jacoblucas.covid19tracker.models;
+package com.jacoblucas.covid19tracker.models.coronavirustrackerapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.jacoblucas.covid19tracker.models.Coordinates;
 import org.immutables.value.Value;
 
 import java.time.Instant;

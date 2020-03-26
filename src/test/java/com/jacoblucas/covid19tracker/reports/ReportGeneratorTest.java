@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.TestBase;
-import com.jacoblucas.covid19tracker.adapters.Covid19Adapter;
+import com.jacoblucas.covid19tracker.adapters.CoronaVirusTrackerApiAdapter;
 import com.jacoblucas.covid19tracker.models.ImmutablePair;
-import com.jacoblucas.covid19tracker.models.Locations;
 import com.jacoblucas.covid19tracker.models.Pair;
+import com.jacoblucas.covid19tracker.models.coronavirustrackerapi.Locations;
+import com.jacoblucas.covid19tracker.reports.coronavirustrackerapi.DailyConfirmedCasesDeltaReport;
+import com.jacoblucas.covid19tracker.reports.coronavirustrackerapi.ReportGenerator;
 import com.jacoblucas.covid19tracker.utils.InputReader;
 import org.junit.After;
 import org.junit.Before;
@@ -34,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class ReportGeneratorTest extends TestBase {
     private static Locations US_WASHINGTON;
 
-    @Mock private Covid19Adapter mockCovid19Adapter;
+    @Mock private CoronaVirusTrackerApiAdapter mockCoronaVirusTrackerApiAdapter;
 
     private ReportGenerator reportGenerator;
 
@@ -45,12 +47,12 @@ public class ReportGeneratorTest extends TestBase {
 
     @Before
     public void setUp() {
-        reportGenerator = new ReportGenerator(mockCovid19Adapter);
+        reportGenerator = new ReportGenerator(mockCoronaVirusTrackerApiAdapter);
     }
 
     @After
     public void tearDown() {
-        verifyNoMoreInteractions(mockCovid19Adapter);
+        verifyNoMoreInteractions(mockCoronaVirusTrackerApiAdapter);
     }
 
     @Test
@@ -60,7 +62,7 @@ public class ReportGeneratorTest extends TestBase {
                 "country_code", "US",
                 "timelines", "1",
                 "source", "jhu");
-        when(mockCovid19Adapter.getLocations(filters)).thenReturn(US_WASHINGTON);
+        when(mockCoronaVirusTrackerApiAdapter.getLocations(filters)).thenReturn(US_WASHINGTON);
 
         final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
         assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
@@ -80,6 +82,6 @@ public class ReportGeneratorTest extends TestBase {
                 ImmutablePair.of(Instant.parse("2020-03-20T00:00:00Z"), 148),
                 ImmutablePair.of(Instant.parse("2020-03-21T00:00:00Z"), 269))));
 
-        verify(mockCovid19Adapter, times(1)).getLocations(filters);
+        verify(mockCoronaVirusTrackerApiAdapter, times(1)).getLocations(filters);
     }
 }

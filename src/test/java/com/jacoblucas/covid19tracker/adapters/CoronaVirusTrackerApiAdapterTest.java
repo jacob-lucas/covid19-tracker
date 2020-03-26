@@ -14,19 +14,19 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 
-import static com.jacoblucas.covid19tracker.adapters.Covid19Adapter.BASE_URL;
+import static com.jacoblucas.covid19tracker.adapters.CoronaVirusTrackerApiAdapter.BASE_URL;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class Covid19AdapterTest extends TestBase {
+public class CoronaVirusTrackerApiAdapterTest extends TestBase {
     private static String JSON;
 
     @Mock private HttpClient mockHttpClient;
 
-    private Covid19Adapter covid19Adapter;
+    private CoronaVirusTrackerApiAdapter coronaVirusTrackerApiAdapter;
 
     @BeforeClass
     public static void setUpSuite() throws IOException {
@@ -35,7 +35,7 @@ public class Covid19AdapterTest extends TestBase {
 
     @Before
     public void setUp() {
-        covid19Adapter = new Covid19Adapter(mockHttpClient);
+        coronaVirusTrackerApiAdapter = new CoronaVirusTrackerApiAdapter(mockHttpClient);
     }
 
     @After
@@ -48,7 +48,7 @@ public class Covid19AdapterTest extends TestBase {
         final ImmutableMap<String, String> querystringMap = ImmutableMap.of("timelines", "1");
         when(mockHttpClient.get(BASE_URL + "locations", querystringMap)).thenReturn(JSON);
 
-        covid19Adapter.getAllLocations(true);
+        coronaVirusTrackerApiAdapter.getAllLocations(true);
         verify(mockHttpClient, times(1)).get(BASE_URL + "locations", querystringMap);
     }
 
@@ -58,7 +58,7 @@ public class Covid19AdapterTest extends TestBase {
         when(mockHttpClient.get(BASE_URL + "locations", querystringMap)).thenThrow(new IOException("error!"));
 
         try {
-            covid19Adapter.getAllLocations(true);
+            coronaVirusTrackerApiAdapter.getAllLocations(true);
         } finally {
             verify(mockHttpClient, times(1)).get(BASE_URL + "locations", querystringMap);
         }
@@ -69,7 +69,7 @@ public class Covid19AdapterTest extends TestBase {
         final ImmutableMap<String, String> querystringMap = ImmutableMap.of("timelines", "1", "country_code", "US");
         when(mockHttpClient.get(BASE_URL + "locations", querystringMap)).thenReturn(JSON);
 
-        covid19Adapter.getLocationsByCountry("US", true);
+        coronaVirusTrackerApiAdapter.getLocationsByCountry("US", true);
         verify(mockHttpClient, times(1)).get(BASE_URL + "locations", querystringMap);
     }
 
@@ -79,7 +79,7 @@ public class Covid19AdapterTest extends TestBase {
         when(mockHttpClient.get(BASE_URL + "locations", querystringMap)).thenThrow(new IOException("error!"));
 
         try {
-            covid19Adapter.getLocationsByCountry("US", true);
+            coronaVirusTrackerApiAdapter.getLocationsByCountry("US", true);
         } finally {
             verify(mockHttpClient, times(1)).get(BASE_URL + "locations", querystringMap);
         }
@@ -91,7 +91,7 @@ public class Covid19AdapterTest extends TestBase {
         final String json = InputReader.readAll("v2-location-response.json");
         when(mockHttpClient.get(BASE_URL + "locations/" + id)).thenReturn(json);
 
-        covid19Adapter.getLocation(id);
+        coronaVirusTrackerApiAdapter.getLocation(id);
         verify(mockHttpClient, times(1)).get(BASE_URL + "locations/" + id);
     }
 
@@ -101,7 +101,7 @@ public class Covid19AdapterTest extends TestBase {
         when(mockHttpClient.get(BASE_URL + "locations/" + id)).thenThrow(new IOException("error!"));
 
         try {
-            covid19Adapter.getLocation(id);
+            coronaVirusTrackerApiAdapter.getLocation(id);
         } finally {
             verify(mockHttpClient, times(1)).get(BASE_URL + "locations/" + id);
         }

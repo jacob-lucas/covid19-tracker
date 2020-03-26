@@ -1,4 +1,4 @@
-package com.jacoblucas.covid19tracker.models;
+package com.jacoblucas.covid19tracker.models.coronavirustrackerapi;
 
 public final class Metrics {
     public static final String CONFIRMED = "confirmed";

@@ -1,4 +1,4 @@
-package com.jacoblucas.covid19tracker.reports;
+package com.jacoblucas.covid19tracker.reports.coronavirustrackerapi;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.jacoblucas.covid19tracker.models.Pair;
