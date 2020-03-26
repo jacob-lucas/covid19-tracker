@@ -55,13 +55,14 @@ public class ReportGeneratorTest extends TestBase {
 
     @Test
     public void testDeltaCalculations() throws IOException {
-        final Map<String, String> filterMap = ImmutableMap.of(
+        final Map<String, String> filters = ImmutableMap.of(
                 "province", "Washington",
                 "country_code", "US",
-                "timelines", "1");
-        when(mockCovid19Adapter.getLocationsWithCustomFilter(filterMap)).thenReturn(US_WASHINGTON);
+                "timelines", "1",
+                "source", "jhu");
+        when(mockCovid19Adapter.getLocations(filters)).thenReturn(US_WASHINGTON);
 
-        final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filterMap);
+        final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
         assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
 
         final List<Pair<Instant, Integer>> confirmedCasesDeltas = dailyConfirmedCasesDeltaReport.getConfirmedCasesDeltas();
@@ -79,6 +80,6 @@ public class ReportGeneratorTest extends TestBase {
                 ImmutablePair.of(Instant.parse("2020-03-20T00:00:00Z"), 148),
                 ImmutablePair.of(Instant.parse("2020-03-21T00:00:00Z"), 269))));
 
-        verify(mockCovid19Adapter, times(1)).getLocationsWithCustomFilter(filterMap);
+        verify(mockCovid19Adapter, times(1)).getLocations(filters);
     }
 }

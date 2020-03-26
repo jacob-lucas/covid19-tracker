@@ -24,10 +24,11 @@ public class ReportGenerator {
         this.covid19Adapter = covid19Adapter;
     }
 
+    // TODO: date filtering
     public DailyConfirmedCasesDeltaReport generateDailyConfirmedCasesDeltaReport(
-            final Map<String, String> filterMap
+            final Map<String, String> filters
     ) throws IOException {
-        Map<String, String> customFilter = new HashMap<>(filterMap);
+        Map<String, String> customFilter = new HashMap<>(filters);
         if (!customFilter.containsKey("timelines")) {
             customFilter.put("timelines", "1");
         }
@@ -37,12 +38,12 @@ public class ReportGenerator {
         }
 
         final String source = customFilter.get("source");
-        final Locations locations = covid19Adapter.getLocationsWithCustomFilter(customFilter);
+        final Locations locations = covid19Adapter.getLocations(customFilter);
         final List<Pair<Instant, Integer>> data = getConfirmedCasesDeltas(locations);
         return ImmutableDailyConfirmedCasesDeltaReport.builder()
                 .reportGeneratedAt(Instant.now())
                 .source(source)
-                .filterMap(filterMap)
+                .filters(filters)
                 .currentTotalConfirmed(locations.getLatest().get(Metrics.CONFIRMED))
                 .confirmedCasesDeltas(data)
                 .build();
