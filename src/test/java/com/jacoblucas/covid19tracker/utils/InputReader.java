@@ -18,6 +18,10 @@ public class InputReader {
         return readFile(INPUT_DIR, filename).collect(Collectors.joining());
     }
 
+    public static String readAll(final String filename, final String delim) throws IOException {
+        return readFile(INPUT_DIR, filename).collect(Collectors.joining(delim));
+    }
+
     static Stream<String> readFile(final String path, final String filename) throws IOException {
         return Files.readAllLines(Paths.get(path + filename), StandardCharsets.UTF_8).stream();
     }
