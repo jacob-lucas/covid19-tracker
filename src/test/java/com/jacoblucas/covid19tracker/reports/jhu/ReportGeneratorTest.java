@@ -5,9 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.TestBase;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.models.DailyConfirmedCasesDeltaReport;
-import com.jacoblucas.covid19tracker.models.jhu.ImmutableLocation;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
-import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 import com.jacoblucas.covid19tracker.utils.InputReader;
 import org.junit.After;
 import org.junit.Before;
@@ -76,7 +74,7 @@ public class ReportGeneratorTest extends TestBase {
         assertThat(filtered, is(not(empty())));
         assertThat(filtered.stream().allMatch(loc -> {
             final String fromStr = DATE_FORMAT.format(loc.getDateCountData().keySet().stream().min(Comparator.naturalOrder()).get());
-            return fromStr.equals("03/20/20");
+            return fromStr.equals("03/19/20");
         }), is(true));
         assertThat(filtered.stream().allMatch(loc -> {
             final String toStr = DATE_FORMAT.format(loc.getDateCountData().keySet().stream().max(Comparator.naturalOrder()).get());
@@ -107,78 +105,51 @@ public class ReportGeneratorTest extends TestBase {
     }
 
     @Test
-    public void testTotalCalculation() throws IOException {
-        final Location usa = ImmutableLocation.builder()
-                .latitude(37.0902F)
-                .longitude(-95.7129F)
-                .country("US")
-                .locationDataType(LocationDataType.CONFIRMED_CASES)
-                .rawCountData(ImmutableMap.of(
-                        "3/15/20", 100,
-                        "3/16/20", 120,
-                        "3/17/20", 150,
-                        "3/18/20", 165,
-                        "3/19/20", 150))
-                .build();
-        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(ImmutableList.of(usa));
+    public void testTotalCalculationWithDates() throws IOException {
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
 
         final Map<String, String> filters = ImmutableMap.of(
                 "fromDate", "3/15/20",
-                "toDate", "3/29/20");
+                "toDate", "3/19/20",
+                "country", "US");
         final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
         assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
-        assertThat(dailyConfirmedCasesDeltaReport.getCurrentTotalConfirmed(), is(685));
+        assertThat(dailyConfirmedCasesDeltaReport.getCurrentTotalConfirmed(), is(10950));
+
+        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
+    }
+
+    @Test
+    public void testTotalCalculationNoDates() throws IOException {
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
+
+        final Map<String, String> filters = ImmutableMap.of("country", "US");
+        final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
+        assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
+        assertThat(dailyConfirmedCasesDeltaReport.getCurrentTotalConfirmed(), is(65777));
 
         verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
     }
 
     @Test
     public void testDeltaCalculations() throws IOException, ParseException {
-        final Location usa = ImmutableLocation.builder()
-                .latitude(37.0902F)
-                .longitude(-95.7129F)
-                .country("US")
-                .locationDataType(LocationDataType.CONFIRMED_CASES)
-                .rawCountData(ImmutableMap.of(
-                        "3/15/20", 100,
-                        "3/16/20", 120,
-                        "3/17/20", 150,
-                        "3/18/20", 165,
-                        "3/19/20", 150))
-                .build();
-        final Location ita = ImmutableLocation.builder()
-                .latitude(37.0902F)
-                .longitude(-95.7129F)
-                .country("US")
-                .locationDataType(LocationDataType.CONFIRMED_CASES)
-                .rawCountData(ImmutableMap.of(
-                        "3/15/20", 24747,
-                        "3/16/20", 27980,
-                        "3/17/20", 31506,
-                        "3/18/20", 35713,
-                        "3/19/20", 41035))
-                .build();
-        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(ImmutableList.of(usa, ita));
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
 
         final Map<String, String> filters = ImmutableMap.of(
                 "fromDate", "3/15/20",
-                "toDate", "3/29/20");
+                "toDate", "3/19/20",
+                "country", "US");
+
         final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
         assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
 
         final List<Location> confirmedCasesDeltas = dailyConfirmedCasesDeltaReport.getConfirmedCasesDeltas();
         assertThat(confirmedCasesDeltas.get(0).getDateCountData(), is(ImmutableMap.of(
-                DATE_FORMAT.parse("3/15/20"), 0,
-                DATE_FORMAT.parse("3/16/20"), 20,
-                DATE_FORMAT.parse("3/17/20"), 30,
-                DATE_FORMAT.parse("3/18/20"), 15,
-                DATE_FORMAT.parse("3/19/20"), -15)));
-        assertThat(confirmedCasesDeltas.get(1).getDateCountData(), is(ImmutableMap.of(
-                DATE_FORMAT.parse("3/15/20"), 0,
-                DATE_FORMAT.parse("3/16/20"), 3233,
-                DATE_FORMAT.parse("3/17/20"), 3526,
-                DATE_FORMAT.parse("3/18/20"), 4207,
-                DATE_FORMAT.parse("3/19/20"), 5322)));
+                DATE_FORMAT.parse("3/15/20"), 772,
+                DATE_FORMAT.parse("3/16/20"), 1133,
+                DATE_FORMAT.parse("3/17/20"), 1789,
+                DATE_FORMAT.parse("3/18/20"), 1362,
+                DATE_FORMAT.parse("3/19/20"), 5894)));
 
         verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
     }

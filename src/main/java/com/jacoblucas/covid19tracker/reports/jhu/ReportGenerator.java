@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,13 +33,13 @@ public class ReportGenerator {
         final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData();
         final List<Location> filteredLocations = filter(allLocationData, filters);
 
-        final int total = filteredLocations.stream()
+        final List<Location> confirmedCaseDeltas = getConfirmedCaseDeltas(filteredLocations);
+
+        final int total = confirmedCaseDeltas.stream()
                 .map(loc -> loc.getDateCountData().values()
                         .stream()
                         .reduce(0, Integer::sum))
                 .reduce(0, Integer::sum);
-
-        final List<Location> confirmedCaseDeltas = getConfirmedCaseDeltas(filteredLocations);
 
         return ImmutableDailyConfirmedCasesDeltaReport.builder()
                 .reportGeneratedAt(Instant.now().toString())
@@ -57,7 +58,7 @@ public class ReportGenerator {
        Date from;
        Date to;
         try {
-            from = DATE_FORMAT.parse(fromDateStr);
+            from = new Date(DATE_FORMAT.parse(fromDateStr).toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli());
             to = DATE_FORMAT.parse(toDateStr);
         } catch (final ParseException e) {
             throw new IllegalArgumentException(String.format("Invalid dates provided for filtering: fromDate [%s] toDate [%s]", fromDateStr, toDateStr), e);
@@ -68,8 +69,8 @@ public class ReportGenerator {
 
         final DateRangeFilter dateRangeFilter = new DateRangeFilter(from, to);
         return locationData.stream()
-                .filter(new CountryFilter(country))
                 .map(dateRangeFilter::apply)
+                .filter(new CountryFilter(country))
                 .collect(Collectors.toList());
     }
 
@@ -82,7 +83,6 @@ public class ReportGenerator {
                             .collect(Collectors.toList());
 
                     final Map<String, Integer> deltas = Maps.newTreeMap();
-                    deltas.put(DATE_FORMAT.format(days.get(0)), 0);
                     for (int i=1; i<days.size(); i++) {
                         final Date today = days.get(i);
                         final Date yesterday = days.get(i-1);
