@@ -22,7 +22,6 @@ import java.text.ParseException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.jacoblucas.covid19tracker.reports.jhu.ReportGenerator.DATE_FORMAT;
@@ -58,7 +57,7 @@ public class ReportGeneratorTest extends TestBase {
                         .filter(loc -> loc.getCountry().equals("US"))
                         .collect(Collectors.toList()));
 
-        when(mockJohnsHopkinsCovid19Adapter.getLocationData("US")).thenReturn(Optional.of(usLocationData));
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(ImmutableList.of(usLocationData));
         reportGenerator = new ReportGenerator(mockJohnsHopkinsCovid19Adapter);
     }
 
