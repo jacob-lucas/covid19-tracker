@@ -1,7 +1,7 @@
-package com.jacoblucas.covid19tracker.reports.coronavirustrackerapi;
+package com.jacoblucas.covid19tracker.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.jacoblucas.covid19tracker.models.Pair;
+import com.jacoblucas.covid19tracker.models.jhu.Location;
 import org.immutables.value.Value;
 
 import java.time.Instant;
@@ -19,5 +19,5 @@ public abstract class DailyConfirmedCasesDeltaReport {
 
     public abstract int getCurrentTotalConfirmed();
 
-    public abstract List<Pair<Instant, Integer>> getConfirmedCasesDeltas();
+    public abstract List<Location> getConfirmedCasesDeltas();
 }

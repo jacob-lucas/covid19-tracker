@@ -1,11 +1,12 @@
 package com.jacoblucas.covid19tracker;
 
+import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.http.HttpClient;
-import com.jacoblucas.covid19tracker.models.jhu.Location;
+import com.jacoblucas.covid19tracker.models.DailyConfirmedCasesDeltaReport;
+import com.jacoblucas.covid19tracker.reports.jhu.ReportGenerator;
 
 import java.io.IOException;
-import java.util.List;
 
 public class Main {
 
@@ -13,16 +14,9 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         final JohnsHopkinsCovid19Adapter adapter = new JohnsHopkinsCovid19Adapter(new HttpClient(), TSD_URL);
-        final List<Location> data = adapter.getAllLocationData();
-//        data.forEach(System.out::println);
-
-        final Location australia = adapter.getLocationData("Australia").get();
-        System.out.println(australia);
-
-        australia.getDateCountData().forEach((k, v) -> {
-            System.out.println(k);
-            System.out.println(v);
-            System.out.println("---");
-        });
+        final ReportGenerator reportGenerator = new ReportGenerator(adapter);
+        final DailyConfirmedCasesDeltaReport report = reportGenerator.generateDailyConfirmedCasesDeltaReport(
+                ImmutableMap.of("fromDate", "3/15/20", "toDate", "3/19/20", "country", "US"));
+        System.out.println(report);
     }
 }

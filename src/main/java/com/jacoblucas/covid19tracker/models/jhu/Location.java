@@ -91,7 +91,17 @@ public abstract class Location {
                 .build();
     }
 
-    public static Optional<Location> parse(final String[] headers, final String[] arr, final LocationDataType locationDataType) {
+    public static List<Location> parse(final List<String> rawData) {
+        final String[] headers = rawData.remove(0).split(DELIMITER);
+        return rawData.stream()
+                .map(str -> str.split(DELIMITER))
+                .map(arr -> Location.parse(headers, arr, LocationDataType.CONFIRMED_CASES))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    static Optional<Location> parse(final String[] headers, final String[] arr, final LocationDataType locationDataType) {
         try {
             int stateIdx = 0;
             int countryIdx = 1;

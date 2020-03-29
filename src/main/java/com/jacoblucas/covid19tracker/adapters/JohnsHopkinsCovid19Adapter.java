@@ -2,7 +2,6 @@ package com.jacoblucas.covid19tracker.adapters;
 
 import com.jacoblucas.covid19tracker.http.HttpClient;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
-import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import java.util.stream.Collectors;
 
 // Provides access to JHU COVID-19 data, found at https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data
 public class JohnsHopkinsCovid19Adapter {
+    public static final String NAME = "CSSE at Johns Hopkins University";
     public static final String DELIMITER = ",";
     public static final String DATE_FORMAT = "MM/dd/yy";
 
@@ -30,13 +30,7 @@ public class JohnsHopkinsCovid19Adapter {
 
     public List<Location> getAllLocationData() throws IOException {
         final List<String> raw = downloadRawData();
-        final String[] headers = raw.remove(0).split(DELIMITER);
-        return raw.stream()
-                .map(str -> str.split(DELIMITER))
-                .map(arr -> Location.parse(headers, arr, LocationDataType.CONFIRMED_CASES))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+        return Location.parse(raw);
     }
 
     public Optional<Location> getLocationData(final String country) throws IOException {

@@ -14,10 +14,6 @@ public class InputReader {
         return readFile(INPUT_DIR, filename);
     }
 
-    public static String readAll(final String filename) throws IOException {
-        return readFile(INPUT_DIR, filename).collect(Collectors.joining());
-    }
-
     public static String readAll(final String filename, final String delim) throws IOException {
         return readFile(INPUT_DIR, filename).collect(Collectors.joining(delim));
     }
