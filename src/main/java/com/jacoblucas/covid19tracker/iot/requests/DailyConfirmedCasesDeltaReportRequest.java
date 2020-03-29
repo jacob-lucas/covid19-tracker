@@ -1,5 +1,6 @@
 package com.jacoblucas.covid19tracker.iot.requests;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.immutables.value.Value;
 
@@ -11,18 +12,18 @@ import java.util.Optional;
 public abstract class DailyConfirmedCasesDeltaReportRequest {
     public abstract Map<String, String> getFilters();
 
+    @JsonIgnore
     @Value.Derived
+    @Value.Auxiliary
     public Optional<String> getFromDate() {
         return Optional.ofNullable(getFilters().get("fromDate"));
     }
 
+    @JsonIgnore
     @Value.Derived
+    @Value.Auxiliary
     public Optional<String> getToDate() {
         return Optional.ofNullable(getFilters().get("toDate"));
-    }
-
-    public boolean containsDateFilter() {
-        return getFromDate().isPresent() && getToDate().isPresent();
     }
 
     @Value.Check
