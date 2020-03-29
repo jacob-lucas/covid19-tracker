@@ -1,6 +1,7 @@
 package com.jacoblucas.covid19tracker.iot.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.immutables.value.Value;
 
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Value.Immutable
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(as = ImmutableDailyConfirmedCasesDeltaReportRequest.class)
 public abstract class DailyConfirmedCasesDeltaReportRequest {
     public abstract Map<String, String> getFilters();

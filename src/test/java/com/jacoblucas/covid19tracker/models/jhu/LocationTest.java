@@ -2,11 +2,8 @@ package com.jacoblucas.covid19tracker.models.jhu;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
-import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import org.junit.Test;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,7 +17,6 @@ public class LocationTest {
     private static final String WESTERN_AUSTRALIA = "Western Australia,Australia,-31.9505,115.8605,90,120,140,175,175";
     private static final String US = ",US,37.0902,-95.7129,25489,33276,43847,53740,65778";
     private static final String SOUTH_KOREA = ",\"Korea, South\",36.0,128.0,8799,8961,8961,9037,9137";
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(JohnsHopkinsCovid19Adapter.DATE_FORMAT);
 
     @Test
     public void testParseWithoutState() {
