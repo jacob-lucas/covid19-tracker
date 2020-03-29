@@ -114,7 +114,7 @@ public class ReportGeneratorTest extends TestBase {
                 "country", "US");
         final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
         assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
-        assertThat(dailyConfirmedCasesDeltaReport.getCurrentTotalConfirmed(), is(10950));
+        assertThat(dailyConfirmedCasesDeltaReport.getTotal(), is(10950));
 
         verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
     }
@@ -126,7 +126,7 @@ public class ReportGeneratorTest extends TestBase {
         final Map<String, String> filters = ImmutableMap.of("country", "US");
         final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
         assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
-        assertThat(dailyConfirmedCasesDeltaReport.getCurrentTotalConfirmed(), is(65777));
+        assertThat(dailyConfirmedCasesDeltaReport.getTotal(), is(65777));
 
         verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
     }

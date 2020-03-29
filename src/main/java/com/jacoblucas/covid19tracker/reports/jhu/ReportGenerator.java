@@ -45,7 +45,7 @@ public class ReportGenerator {
                 .reportGeneratedAt(Instant.now().toString())
                 .source(JohnsHopkinsCovid19Adapter.NAME)
                 .filters(filters)
-                .currentTotalConfirmed(total)
+                .total(total)
                 .confirmedCasesDeltas(confirmedCaseDeltas)
                 .build();
     }

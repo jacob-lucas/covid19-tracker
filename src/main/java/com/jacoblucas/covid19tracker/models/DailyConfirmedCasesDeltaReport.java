@@ -17,7 +17,7 @@ public abstract class DailyConfirmedCasesDeltaReport {
 
     public abstract Map<String, String> getFilters();
 
-    public abstract int getCurrentTotalConfirmed();
+    public abstract int getTotal();
 
     public abstract List<Location> getConfirmedCasesDeltas();
 }
