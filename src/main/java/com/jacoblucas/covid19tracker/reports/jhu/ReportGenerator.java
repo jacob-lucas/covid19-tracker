@@ -1,5 +1,6 @@
 package com.jacoblucas.covid19tracker.reports.jhu;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.models.DailyConfirmedCasesDeltaReport;
@@ -52,11 +53,12 @@ public class ReportGenerator {
 
     final List<Location> filter(final List<Location> locationData, final Map<String, String> filters) {
         final String country = filters.get("country");
+        final String state = filters.get("state");
         final String fromDateStr = filters.get("fromDate");
         final String toDateStr = filters.get("toDate");
 
-       Date from;
-       Date to;
+        Date from;
+        Date to;
         try {
             from = new Date(DATE_FORMAT.parse(fromDateStr).toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli());
             to = DATE_FORMAT.parse(toDateStr);
@@ -68,10 +70,17 @@ public class ReportGenerator {
         }
 
         final DateRangeFilter dateRangeFilter = new DateRangeFilter(from, to);
-        return locationData.stream()
+        final List<Location> filtered = locationData.stream()
                 .map(dateRangeFilter::apply)
                 .filter(new CountryFilter(country))
                 .collect(Collectors.toList());
+
+        if (state == null && country != null && filtered.size() > 1) {
+            // aggregate by country if multiple locations (states) are reporting data
+            return ImmutableList.of(Location.aggregateByCountry(filtered));
+        } else {
+            return filtered;
+        }
     }
 
     private List<Location> getConfirmedCaseDeltas(final List<Location> locations) {

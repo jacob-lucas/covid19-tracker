@@ -153,4 +153,30 @@ public class ReportGeneratorTest extends TestBase {
 
         verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
     }
+
+    @Test
+    public void testAggregatesWhenStateNotFiltered() throws IOException, ParseException {
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
+
+        final Map<String, String> filters = ImmutableMap.of(
+                "fromDate", "3/15/20",
+                "toDate", "3/19/20",
+                "country", "Australia");
+
+        final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
+        assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
+
+        assertThat(dailyConfirmedCasesDeltaReport.getTotal(), is(431));
+
+        final List<Location> confirmedCasesDeltas = dailyConfirmedCasesDeltaReport.getConfirmedCasesDeltas();
+        assertThat(confirmedCasesDeltas.size(), is(1));
+        assertThat(confirmedCasesDeltas.get(0).getDateCountData(), is(ImmutableMap.of(
+                DATE_FORMAT.parse("3/15/20"), 47,
+                DATE_FORMAT.parse("3/16/20"), 80,
+                DATE_FORMAT.parse("3/17/20"), 75,
+                DATE_FORMAT.parse("3/18/20"), 116,
+                DATE_FORMAT.parse("3/19/20"), 113)));
+
+        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
+    }
 }

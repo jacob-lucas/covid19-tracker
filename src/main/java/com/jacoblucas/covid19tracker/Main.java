@@ -15,8 +15,11 @@ public class Main {
     public static void main(String[] args) throws IOException {
         final JohnsHopkinsCovid19Adapter adapter = new JohnsHopkinsCovid19Adapter(new HttpClient(), TSD_URL);
         final ReportGenerator reportGenerator = new ReportGenerator(adapter);
-        final DailyConfirmedCasesDeltaReport report = reportGenerator.generateDailyConfirmedCasesDeltaReport(
+        final DailyConfirmedCasesDeltaReport australia = reportGenerator.generateDailyConfirmedCasesDeltaReport(
+                ImmutableMap.of("fromDate", "3/15/20", "toDate", "3/19/20", "country", "Australia"));
+        System.out.println(australia);
+        final DailyConfirmedCasesDeltaReport usa = reportGenerator.generateDailyConfirmedCasesDeltaReport(
                 ImmutableMap.of("fromDate", "3/15/20", "toDate", "3/19/20", "country", "US"));
-        System.out.println(report);
+        System.out.println(usa);
     }
 }
