@@ -15,6 +15,6 @@ public class CountryFilter implements Predicate<Location> {
 
     @Override
     public boolean test(final Location location) {
-        return location.getCountry().equals(country);
+        return country == null || location.getCountry().equals(country);
     }
 }

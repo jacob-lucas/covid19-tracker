@@ -30,7 +30,7 @@ public class CountryFilterTest {
     @Test
     public void testFilterForNull() {
         final CountryFilter filter = new CountryFilter(null);
-        assertThat(filter.test(location), is(false));
+        assertThat(filter.test(location), is(true));
     }
 
     @Test

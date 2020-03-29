@@ -11,13 +11,13 @@ import com.jacoblucas.covid19tracker.reports.jhu.filters.DateRangeFilter;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ReportGenerator {
     static final DateFormat DATE_FORMAT = new SimpleDateFormat(JohnsHopkinsCovid19Adapter.DATE_FORMAT);
@@ -50,27 +50,25 @@ public class ReportGenerator {
     }
 
     final List<Location> filter(final List<Location> locationData, final Map<String, String> filters) {
+        final String country = filters.get("country");
         final String fromDateStr = filters.get("fromDate");
         final String toDateStr = filters.get("toDate");
-        final Date from;
-        final Date to;
+
+       Date from;
+       Date to;
         try {
             from = DATE_FORMAT.parse(fromDateStr);
             to = DATE_FORMAT.parse(toDateStr);
-        } catch (final Exception e) {
+        } catch (final ParseException e) {
             throw new IllegalArgumentException(String.format("Invalid dates provided for filtering: fromDate [%s] toDate [%s]", fromDateStr, toDateStr), e);
-        }
-
-        final String country = filters.get("country");
-
-        Stream<Location> resultLocations = locationData.stream();
-
-        if (country != null) {
-            resultLocations = resultLocations.filter(new CountryFilter(country));
+        } catch (final NullPointerException e) {
+            from = null;
+            to = null;
         }
 
         final DateRangeFilter dateRangeFilter = new DateRangeFilter(from, to);
-        return resultLocations
+        return locationData.stream()
+                .filter(new CountryFilter(country))
                 .map(dateRangeFilter::apply)
                 .collect(Collectors.toList());
     }

@@ -85,20 +85,6 @@ public class ReportGeneratorTest extends TestBase {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testFilterMissingFromDate() {
-        final Map<String, String> filters = ImmutableMap.of(
-                "toDate", "3/25/20");
-        reportGenerator.filter(LOCATION_DATA, filters);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testFilterMissingToDate() {
-        final Map<String, String> filters = ImmutableMap.of(
-                "fromDate", "3/25/20");
-        reportGenerator.filter(LOCATION_DATA, filters);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testFilterInvalidFromDate() {
         final Map<String, String> filters = ImmutableMap.of(
                 "fromDate", "abc",
@@ -112,6 +98,12 @@ public class ReportGeneratorTest extends TestBase {
                 "fromDate", "3/20/20",
                 "toDate", "/20");
         reportGenerator.filter(LOCATION_DATA, filters);
+    }
+
+    @Test
+    public void testEmptyFilter() {
+        final List<Location> filtered = reportGenerator.filter(LOCATION_DATA, ImmutableMap.of());
+        assertThat(filtered, is(LOCATION_DATA));
     }
 
     @Test
