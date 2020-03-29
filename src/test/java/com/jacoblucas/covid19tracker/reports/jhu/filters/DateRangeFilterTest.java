@@ -37,12 +37,35 @@ public class DateRangeFilterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testDateRangeFilterNullFrom() throws ParseException {
+        final Date to = DATE_FORMAT.parse("2/17/20");
+
+        final DateRangeFilter filter = new DateRangeFilter(null, to);
+        filter.apply(location);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDateRangeFilterNullTo() throws ParseException {
+        final Date from = DATE_FORMAT.parse("3/17/20");
+
+        final DateRangeFilter filter = new DateRangeFilter(from, null);
+        filter.apply(location);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testDateRangeFilterToBeforeFrom() throws ParseException {
         final Date from = DATE_FORMAT.parse("3/17/20");
         final Date to = DATE_FORMAT.parse("2/17/20");
 
         final DateRangeFilter filter = new DateRangeFilter(from, to);
         filter.apply(location);
+    }
+
+    @Test
+    public void testDateRangeFilterBothNull() {
+        final DateRangeFilter filter = new DateRangeFilter(null, null);
+        final Location filteredLocation = filter.apply(location);
+        assertThat(filteredLocation, is(location));
     }
 
     @Test

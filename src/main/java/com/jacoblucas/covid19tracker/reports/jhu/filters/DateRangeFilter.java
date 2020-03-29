@@ -4,7 +4,7 @@ import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.models.jhu.ImmutableLocation;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,8 +16,8 @@ public class DateRangeFilter implements Filter<Location> {
     private final Date from, to;
 
     public DateRangeFilter(
-            @Nonnull final Date from,
-            @Nonnull final Date to
+            @Nullable final Date from,
+            @Nullable final Date to
     ) {
         this.from = from;
         this.to = to;
@@ -27,7 +27,14 @@ public class DateRangeFilter implements Filter<Location> {
     public Location apply(final Location location) throws IllegalArgumentException {
         final DateFormat dateFormat = new SimpleDateFormat(JohnsHopkinsCovid19Adapter.DATE_FORMAT);
 
-        if (to.before(from)) {
+        if (from == null && to == null) {
+            // nothing to filter
+            return location;
+        } else if (from == null) {
+            throw new IllegalArgumentException("DateRangeFilter cannot be applied: must specify fromDate");
+        } else if (to == null) {
+            throw new IllegalArgumentException("DateRangeFilter cannot be applied: must specify toDate");
+        } else if (to.before(from)) {
             throw new IllegalArgumentException(String.format("DateRangeFilter cannot be applied: fromDate [%s] is not before toDate [%s]",
                     dateFormat.format(from), dateFormat.format(to)));
         }
