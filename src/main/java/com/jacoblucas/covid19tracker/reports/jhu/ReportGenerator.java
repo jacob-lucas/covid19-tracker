@@ -41,7 +41,7 @@ public class ReportGenerator {
         final List<Location> confirmedCaseDeltas = getConfirmedCaseDeltas(filteredLocations);
 
         return ImmutableDailyConfirmedCasesDeltaReport.builder()
-                .reportGeneratedAt(Instant.now())
+                .reportGeneratedAt(Instant.now().toString())
                 .source(JohnsHopkinsCovid19Adapter.NAME)
                 .filters(filters)
                 .currentTotalConfirmed(total)
