@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 @Value.Immutable
-@JsonDeserialize(as = ImmutableDailyConfirmedCasesDeltaReport.class)
-public abstract class DailyConfirmedCasesDeltaReport {
+@JsonDeserialize(as = ImmutableDailyNewCasesReport.class)
+public abstract class DailyNewCasesReport {
     // Timestamp in ISO 8601 format
     public abstract String getReportGeneratedAt();
 

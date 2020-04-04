@@ -12,25 +12,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class DailyConfirmedCasesDeltaReportRequestTest extends TestBase {
+public class DailyNewCasesReportRequestTest extends TestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void fromWithoutToThrowsException() {
-        ImmutableDailyConfirmedCasesDeltaReportRequest.builder()
+        ImmutableDailyNewCasesReportRequest.builder()
                 .filters(ImmutableMap.of("fromDate", "3/22/20", "country", "US"))
                 .build();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void toWithoutFromThrowsException() {
-        ImmutableDailyConfirmedCasesDeltaReportRequest.builder()
+        ImmutableDailyNewCasesReportRequest.builder()
                 .filters(ImmutableMap.of("toDate", "3/21/20", "country", "US"))
                 .build();
     }
 
     @Test
     public void emptyFiltersAllowed() {
-        final DailyConfirmedCasesDeltaReportRequest request = ImmutableDailyConfirmedCasesDeltaReportRequest.builder()
+        final DailyNewCasesReportRequest request = ImmutableDailyNewCasesReportRequest.builder()
                 .filters(ImmutableMap.of())
                 .build();
 
@@ -40,9 +40,9 @@ public class DailyConfirmedCasesDeltaReportRequestTest extends TestBase {
     @Test
     public void ignoresUnknownProperties() throws IOException {
         final String json = InputReader.readAll("request.json", "\n");
-        final DailyConfirmedCasesDeltaReportRequest request = OBJECT_MAPPER.readValue(json, new TypeReference<DailyConfirmedCasesDeltaReportRequest>(){});
+        final DailyNewCasesReportRequest request = OBJECT_MAPPER.readValue(json, new TypeReference<DailyNewCasesReportRequest>(){});
 
-        final DailyConfirmedCasesDeltaReportRequest expected = ImmutableDailyConfirmedCasesDeltaReportRequest.builder()
+        final DailyNewCasesReportRequest expected = ImmutableDailyNewCasesReportRequest.builder()
                 .filters(ImmutableMap.of(
                         "fromDate", "3/1/20",
                         "toDate", "3/31/20",

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.TestBase;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
-import com.jacoblucas.covid19tracker.models.DailyConfirmedCasesDeltaReport;
+import com.jacoblucas.covid19tracker.models.DailyNewCasesReport;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
 import com.jacoblucas.covid19tracker.utils.InputReader;
 import org.junit.After;
@@ -112,9 +112,9 @@ public class ReportGeneratorTest extends TestBase {
                 "fromDate", "3/15/20",
                 "toDate", "3/19/20",
                 "country", "US");
-        final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
-        assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
-        assertThat(dailyConfirmedCasesDeltaReport.getTotal(), is(10950));
+        final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
+        assertThat(dailyNewCasesReport, is(notNullValue()));
+        assertThat(dailyNewCasesReport.getTotal(), is(10950));
 
         verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
     }
@@ -124,9 +124,9 @@ public class ReportGeneratorTest extends TestBase {
         when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
 
         final Map<String, String> filters = ImmutableMap.of("country", "US");
-        final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
-        assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
-        assertThat(dailyConfirmedCasesDeltaReport.getTotal(), is(65777));
+        final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
+        assertThat(dailyNewCasesReport, is(notNullValue()));
+        assertThat(dailyNewCasesReport.getTotal(), is(65777));
 
         verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
     }
@@ -140,10 +140,10 @@ public class ReportGeneratorTest extends TestBase {
                 "toDate", "3/19/20",
                 "country", "US");
 
-        final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
-        assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
+        final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
+        assertThat(dailyNewCasesReport, is(notNullValue()));
 
-        final List<Location> confirmedCasesDeltas = dailyConfirmedCasesDeltaReport.getConfirmedCasesDeltas();
+        final List<Location> confirmedCasesDeltas = dailyNewCasesReport.getConfirmedCasesDeltas();
         assertThat(confirmedCasesDeltas.get(0).getDateCountData(), is(ImmutableMap.of(
                 DATE_FORMAT.parse("3/15/20"), 772,
                 DATE_FORMAT.parse("3/16/20"), 1133,
@@ -163,12 +163,12 @@ public class ReportGeneratorTest extends TestBase {
                 "toDate", "3/19/20",
                 "country", "Australia");
 
-        final DailyConfirmedCasesDeltaReport dailyConfirmedCasesDeltaReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
-        assertThat(dailyConfirmedCasesDeltaReport, is(notNullValue()));
+        final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(filters);
+        assertThat(dailyNewCasesReport, is(notNullValue()));
 
-        assertThat(dailyConfirmedCasesDeltaReport.getTotal(), is(431));
+        assertThat(dailyNewCasesReport.getTotal(), is(431));
 
-        final List<Location> confirmedCasesDeltas = dailyConfirmedCasesDeltaReport.getConfirmedCasesDeltas();
+        final List<Location> confirmedCasesDeltas = dailyNewCasesReport.getConfirmedCasesDeltas();
         assertThat(confirmedCasesDeltas.size(), is(1));
         assertThat(confirmedCasesDeltas.get(0).getDateCountData(), is(ImmutableMap.of(
                 DATE_FORMAT.parse("3/15/20"), 47,

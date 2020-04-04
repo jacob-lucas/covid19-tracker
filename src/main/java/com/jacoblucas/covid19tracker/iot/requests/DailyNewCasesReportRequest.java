@@ -10,8 +10,8 @@ import java.util.Optional;
 
 @Value.Immutable
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonDeserialize(as = ImmutableDailyConfirmedCasesDeltaReportRequest.class)
-public abstract class DailyConfirmedCasesDeltaReportRequest {
+@JsonDeserialize(as = ImmutableDailyNewCasesReportRequest.class)
+public abstract class DailyNewCasesReportRequest {
     public abstract Map<String, String> getFilters();
 
     @JsonIgnore

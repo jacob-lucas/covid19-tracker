@@ -3,8 +3,8 @@ package com.jacoblucas.covid19tracker.reports.jhu;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
-import com.jacoblucas.covid19tracker.models.DailyConfirmedCasesDeltaReport;
-import com.jacoblucas.covid19tracker.models.ImmutableDailyConfirmedCasesDeltaReport;
+import com.jacoblucas.covid19tracker.models.DailyNewCasesReport;
+import com.jacoblucas.covid19tracker.models.ImmutableDailyNewCasesReport;
 import com.jacoblucas.covid19tracker.models.jhu.ImmutableLocation;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
 import com.jacoblucas.covid19tracker.reports.jhu.filters.CountryFilter;
@@ -30,7 +30,7 @@ public class ReportGenerator {
         this.johnsHopkinsCovid19Adapter = johnsHopkinsCovid19Adapter;
     }
 
-    public DailyConfirmedCasesDeltaReport generateDailyConfirmedCasesDeltaReport(final Map<String, String> filters) throws IOException {
+    public DailyNewCasesReport generateDailyConfirmedCasesDeltaReport(final Map<String, String> filters) throws IOException {
         final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData();
         final List<Location> filteredLocations = filter(allLocationData, filters);
 
@@ -42,7 +42,7 @@ public class ReportGenerator {
                         .reduce(0, Integer::sum))
                 .reduce(0, Integer::sum);
 
-        return ImmutableDailyConfirmedCasesDeltaReport.builder()
+        return ImmutableDailyNewCasesReport.builder()
                 .reportGeneratedAt(Instant.now().toString())
                 .source(JohnsHopkinsCovid19Adapter.NAME)
                 .filters(filters)
