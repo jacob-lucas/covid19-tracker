@@ -7,6 +7,7 @@ import com.jacoblucas.covid19tracker.models.DailyNewCasesReport;
 import com.jacoblucas.covid19tracker.models.ImmutableDailyNewCasesReport;
 import com.jacoblucas.covid19tracker.models.jhu.ImmutableLocation;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
+import com.jacoblucas.covid19tracker.models.jhu.LocationSummary;
 import com.jacoblucas.covid19tracker.reports.jhu.filters.CountryFilter;
 import com.jacoblucas.covid19tracker.reports.jhu.filters.DateRangeFilter;
 
@@ -16,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,19 @@ public class ReportGenerator {
 
     public ReportGenerator(final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter) {
         this.johnsHopkinsCovid19Adapter = johnsHopkinsCovid19Adapter;
+    }
+
+    public List<LocationSummary> generateWorldDataSummary() throws IOException {
+        final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData();
+        final Map<String, List<Location>> locationsByCountry = allLocationData.stream()
+                .collect(Collectors.groupingBy(Location::getCountry));
+
+        return locationsByCountry.values()
+                .stream()
+                .map(Location::aggregateByCountry)
+                .map(LocationSummary::generate)
+                .sorted(Comparator.comparing(LocationSummary::getCountry))
+                .collect(Collectors.toList());
     }
 
     public DailyNewCasesReport generateDailyConfirmedCasesDeltaReport(final Map<String, String> filters) throws IOException {

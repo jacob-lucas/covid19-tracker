@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.http.HttpClient;
 import com.jacoblucas.covid19tracker.models.DailyNewCasesReport;
+import com.jacoblucas.covid19tracker.models.jhu.LocationSummary;
 import com.jacoblucas.covid19tracker.reports.jhu.ReportGenerator;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Main {
 
@@ -30,5 +32,8 @@ public class Main {
         final DailyNewCasesReport china = reportGenerator.generateDailyConfirmedCasesDeltaReport(
                 ImmutableMap.of("country", "China"));
         System.out.println(china);
+
+        final List<LocationSummary> worldDataSummary = reportGenerator.generateWorldDataSummary();
+        worldDataSummary.forEach(System.out::println);
     }
 }
