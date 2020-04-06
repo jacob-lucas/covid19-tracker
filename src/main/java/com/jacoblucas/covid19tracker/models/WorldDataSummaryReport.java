@@ -11,14 +11,13 @@ import java.util.List;
 public abstract class WorldDataSummaryReport {
     public abstract String getReportGeneratedAt();
 
-    public abstract List<LocationSummary> getLocationSummaries();
-
     @Value.Derived
-    public String getUpdatedDate() {
-        final Date mostRecentUpdateAt = getLocationSummaries().stream()
+    public Date getUpdatedDate() {
+        return getLocationSummaries().stream()
                 .map(LocationSummary::getUpdatedAt)
                 .max(Comparator.naturalOrder())
                 .get();
-        return mostRecentUpdateAt.toInstant().toString();
     }
+
+    public abstract List<LocationSummary> getLocationSummaries();
 }
