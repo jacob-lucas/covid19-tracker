@@ -31,23 +31,26 @@ public abstract class LocationSummary {
 
     public abstract int getCount();
 
+    public abstract Date getUpdatedAt();
+
     public static LocationSummary generate(final Location location) {
-        int count = 0;
 
         // summary count is the most recent location data
         final Map<Date, Integer> dateCountData = location.getDateCountData();
         final Optional<Date> mostRecent = dateCountData.keySet().stream().max(Comparator.naturalOrder());
-        if (mostRecent.isPresent()) {
-            count = dateCountData.get(mostRecent.get());
+        if (!mostRecent.isPresent()) {
+            throw new IllegalArgumentException(String.format("Missing date count data - cannot summarise %s", location));
         }
 
+        final Date updatedAt = mostRecent.get();
         return ImmutableLocationSummary.builder()
                 .latitude(location.getLatitude())
                 .longitude(location.getLongitude())
                 .country(location.getCountry())
                 .state(location.getState())
                 .locationDataType(location.getLocationDataType())
-                .count(count)
+                .count(dateCountData.get(updatedAt))
+                .updatedAt(updatedAt)
                 .build();
     }
 }

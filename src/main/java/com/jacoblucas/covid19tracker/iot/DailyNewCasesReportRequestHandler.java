@@ -27,7 +27,7 @@ public class DailyNewCasesReportRequestHandler extends RequestHandler implements
         final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter = new JohnsHopkinsCovid19Adapter(httpClient, tsdUrl);
         final ReportGenerator reportGenerator = new ReportGenerator(johnsHopkinsCovid19Adapter);
 
-        final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyConfirmedCasesDeltaReport(request.getFilters());
+        final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyNewCasesReport(request.getFilters());
         objectMapper.writeValue(output, dailyNewCasesReport);
 
         final long duration = Instant.now().toEpochMilli() - start.toEpochMilli();

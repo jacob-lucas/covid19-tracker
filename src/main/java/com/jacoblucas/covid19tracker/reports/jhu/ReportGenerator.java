@@ -5,6 +5,8 @@ import com.google.common.collect.Maps;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.models.DailyNewCasesReport;
 import com.jacoblucas.covid19tracker.models.ImmutableDailyNewCasesReport;
+import com.jacoblucas.covid19tracker.models.ImmutableWorldDataSummaryReport;
+import com.jacoblucas.covid19tracker.models.WorldDataSummaryReport;
 import com.jacoblucas.covid19tracker.models.jhu.ImmutableLocation;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
 import com.jacoblucas.covid19tracker.models.jhu.LocationSummary;
@@ -32,26 +34,31 @@ public class ReportGenerator {
         this.johnsHopkinsCovid19Adapter = johnsHopkinsCovid19Adapter;
     }
 
-    public List<LocationSummary> generateWorldDataSummary() throws IOException {
+    public WorldDataSummaryReport generateWorldDataSummary() throws IOException {
         final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData();
         final Map<String, List<Location>> locationsByCountry = allLocationData.stream()
                 .collect(Collectors.groupingBy(Location::getCountry));
 
-        return locationsByCountry.values()
+        final List<LocationSummary> summaries = locationsByCountry.values()
                 .stream()
                 .map(Location::aggregateByCountry)
                 .map(LocationSummary::generate)
                 .sorted(Comparator.comparing(LocationSummary::getCountry))
                 .collect(Collectors.toList());
+
+        return ImmutableWorldDataSummaryReport.builder()
+                .reportGeneratedAt(Instant.now().toString())
+                .locationSummaries(summaries)
+                .build();
     }
 
-    public DailyNewCasesReport generateDailyConfirmedCasesDeltaReport(final Map<String, String> filters) throws IOException {
+    public DailyNewCasesReport generateDailyNewCasesReport(final Map<String, String> filters) throws IOException {
         final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData();
         final List<Location> filteredLocations = filter(allLocationData, filters);
 
-        final List<Location> confirmedCaseDeltas = getConfirmedCaseDeltas(filteredLocations);
+        final List<Location> dailyNewCases = getConfirmedCaseDeltas(filteredLocations);
 
-        final int total = confirmedCaseDeltas.stream()
+        final int total = dailyNewCases.stream()
                 .map(loc -> loc.getDateCountData().values()
                         .stream()
                         .reduce(0, Integer::sum))
@@ -62,7 +69,7 @@ public class ReportGenerator {
                 .source(JohnsHopkinsCovid19Adapter.NAME)
                 .filters(filters)
                 .total(total)
-                .confirmedCasesDeltas(confirmedCaseDeltas)
+                .dailyNewCases(dailyNewCases)
                 .build();
     }
 

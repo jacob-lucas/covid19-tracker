@@ -19,5 +19,5 @@ public abstract class DailyNewCasesReport {
 
     public abstract int getTotal();
 
-    public abstract List<Location> getConfirmedCasesDeltas();
+    public abstract List<Location> getDailyNewCases();
 }
