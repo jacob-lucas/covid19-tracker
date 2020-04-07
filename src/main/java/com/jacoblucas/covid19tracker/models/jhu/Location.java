@@ -137,7 +137,7 @@ public abstract class Location {
 
             final Map<String, Integer> data = Maps.newTreeMap();
             for (int i = dataIdx; i < headers.length; i++) {
-                final int count = Integer.parseInt(arr[i + offset]);
+                final int count = Integer.parseInt(arr[i + offset].trim());
                 data.put(headers[i], count);
             }
             builder.rawCountData(data);
