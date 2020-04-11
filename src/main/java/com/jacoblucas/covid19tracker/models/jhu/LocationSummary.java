@@ -34,7 +34,6 @@ public abstract class LocationSummary {
     public abstract Date getUpdatedAt();
 
     public static LocationSummary generate(final Location location) {
-
         // summary count is the most recent location data
         final Map<Date, Integer> dateCountData = location.getDateCountData();
         final Optional<Date> mostRecent = dateCountData.keySet().stream().max(Comparator.naturalOrder());

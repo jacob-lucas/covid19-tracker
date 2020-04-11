@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,13 @@ public abstract class Location {
             }
         }
         return data;
+    }
+
+    @JsonIgnore
+    @Value.Derived
+    @Value.Auxiliary
+    public Date getUpdatedAt() {
+        return getDateCountData().keySet().stream().max(Comparator.naturalOrder()).orElse(new Date());
     }
 
     public static Location aggregateByCountry(final List<Location> locations) {
