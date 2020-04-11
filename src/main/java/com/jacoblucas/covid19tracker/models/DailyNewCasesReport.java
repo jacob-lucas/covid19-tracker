@@ -29,7 +29,7 @@ public abstract class DailyNewCasesReport {
         final Date mostRecentUpdateAt = getDailyNewCases().stream()
                 .map(Location::getUpdatedAt)
                 .max(Comparator.naturalOrder())
-                .get();
+                .orElse(new Date());
         return new SimpleDateFormat("YYYY-MM-dd").format(mostRecentUpdateAt);
     }
 }

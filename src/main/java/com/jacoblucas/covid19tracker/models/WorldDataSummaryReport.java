@@ -17,7 +17,7 @@ public abstract class WorldDataSummaryReport {
         final Date mostRecentUpdateAt = getLocationSummaries().stream()
                 .map(LocationSummary::getUpdatedAt)
                 .max(Comparator.naturalOrder())
-                .get();
+                .orElse(new Date());
         return new SimpleDateFormat("YYYY-MM-dd").format(mostRecentUpdateAt);
     }
 
