@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class WorldDataSummaryReportRequestHandler extends RequestHandler implements RequestStreamHandler {
+public class WorldDataDeathCountReportRequestHandler extends RequestHandler implements RequestStreamHandler {
     @Override
     public void handleRequest(final InputStream input, final OutputStream output, final Context context) throws IOException {
         final HttpClient httpClient = new HttpClient();
@@ -23,7 +23,7 @@ public class WorldDataSummaryReportRequestHandler extends RequestHandler impleme
         final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter = new JohnsHopkinsCovid19Adapter(httpClient, dataLocation, tsdFile, deathsFile);
 
         final ReportGenerator reportGenerator = new ReportGenerator(johnsHopkinsCovid19Adapter);
-        final WorldDataSummaryReport report = reportGenerator.generateWorldDataSummary(LocationDataType.CONFIRMED_CASES);
+        final WorldDataSummaryReport report = reportGenerator.generateWorldDataSummary(LocationDataType.DEATHS);
         objectMapper.writeValue(output, report);
     }
 }

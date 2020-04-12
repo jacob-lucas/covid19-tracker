@@ -2,6 +2,7 @@ package com.jacoblucas.covid19tracker.adapters;
 
 import com.jacoblucas.covid19tracker.http.HttpClient;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
+import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 import com.jacoblucas.covid19tracker.utils.InputReader;
 import org.junit.After;
 import org.junit.Before;
@@ -13,7 +14,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -38,7 +38,7 @@ public class JohnsHopkinsCovid19AdapterTest {
 
     @Before
     public void setUp() {
-        adapter = new JohnsHopkinsCovid19Adapter(mockHttpClient, "");
+        adapter = new JohnsHopkinsCovid19Adapter(mockHttpClient, "", "", "");
     }
 
     @After
@@ -50,29 +50,9 @@ public class JohnsHopkinsCovid19AdapterTest {
     public void testGetAllLocationData() throws IOException {
         when(mockHttpClient.get(anyString())).thenReturn(RAW_TSD);
 
-        final List<Location> locations = adapter.getAllLocationData();
+        final List<Location> locations = adapter.getAllLocationData(LocationDataType.CONFIRMED_CASES);
 
         assertThat(locations.size(), is(245));
-        verify(mockHttpClient, times(1)).get(anyString());
-    }
-
-    @Test
-    public void testGetLocationDataByCountryForUnknownCountry() throws IOException {
-        when(mockHttpClient.get(anyString())).thenReturn(RAW_TSD);
-
-        final Optional<Location> location = adapter.getLocationData("does not exist");
-
-        assertThat(location.isPresent(), is(false));
-        verify(mockHttpClient, times(1)).get(anyString());
-    }
-
-    @Test
-    public void testGetLocationDataByCountryForKnownCountry() throws IOException {
-        when(mockHttpClient.get(anyString())).thenReturn(RAW_TSD);
-
-        final Optional<Location> location = adapter.getLocationData("Australia");
-
-        assertThat(location.isPresent(), is(true));
         verify(mockHttpClient, times(1)).get(anyString());
     }
 }

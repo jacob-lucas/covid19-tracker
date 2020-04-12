@@ -2,6 +2,7 @@ package com.jacoblucas.covid19tracker.reports.jhu.filters;
 
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
+import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 import com.jacoblucas.covid19tracker.utils.InputReader;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class DateRangeFilterTest {
     public void setUp() throws IOException {
         final List<String> rawTsd = InputReader.read("time_series_covid19_confirmed_global.csv")
                 .collect(Collectors.toList());
-        final List<Location> locations = Location.parse(rawTsd);
+        final List<Location> locations = Location.parse(rawTsd, LocationDataType.CONFIRMED_CASES);
         location = Location.aggregateByCountry(
                 locations.stream()
                         .filter(loc -> loc.getCountry().equals("US"))

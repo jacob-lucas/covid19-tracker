@@ -99,11 +99,11 @@ public abstract class Location {
                 .build();
     }
 
-    public static List<Location> parse(final List<String> rawData) {
+    public static List<Location> parse(final List<String> rawData, final LocationDataType locationDataType) {
         final String[] headers = rawData.remove(0).split(DELIMITER);
         return rawData.stream()
                 .map(str -> str.split(DELIMITER))
-                .map(arr -> Location.parse(headers, arr, LocationDataType.CONFIRMED_CASES))
+                .map(arr -> Location.parse(headers, arr, locationDataType))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());

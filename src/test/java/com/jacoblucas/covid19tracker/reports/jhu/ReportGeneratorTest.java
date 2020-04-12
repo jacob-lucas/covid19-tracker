@@ -6,6 +6,7 @@ import com.jacoblucas.covid19tracker.TestBase;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.models.DailyNewCasesReport;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
+import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 import com.jacoblucas.covid19tracker.utils.InputReader;
 import org.junit.After;
 import org.junit.Before;
@@ -45,7 +46,7 @@ public class ReportGeneratorTest extends TestBase {
     public static void setUpSuite() throws IOException {
         final List<String> rawTsd = InputReader.read("time_series_covid19_confirmed_global.csv")
                 .collect(Collectors.toList());
-        LOCATION_DATA = Location.parse(rawTsd);
+        LOCATION_DATA = Location.parse(rawTsd, LocationDataType.CONFIRMED_CASES);
     }
 
     @Before
@@ -55,7 +56,7 @@ public class ReportGeneratorTest extends TestBase {
                         .filter(loc -> loc.getCountry().equals("US"))
                         .collect(Collectors.toList()));
 
-        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(ImmutableList.of(usLocationData));
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData(LocationDataType.CONFIRMED_CASES)).thenReturn(ImmutableList.of(usLocationData));
         reportGenerator = new ReportGenerator(mockJohnsHopkinsCovid19Adapter);
     }
 
@@ -106,7 +107,7 @@ public class ReportGeneratorTest extends TestBase {
 
     @Test
     public void testTotalCalculationWithDates() throws IOException {
-        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData(LocationDataType.CONFIRMED_CASES)).thenReturn(LOCATION_DATA);
 
         final Map<String, String> filters = ImmutableMap.of(
                 "fromDate", "3/15/20",
@@ -116,24 +117,24 @@ public class ReportGeneratorTest extends TestBase {
         assertThat(dailyNewCasesReport, is(notNullValue()));
         assertThat(dailyNewCasesReport.getTotal(), is(10950));
 
-        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
+        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData(LocationDataType.CONFIRMED_CASES);
     }
 
     @Test
     public void testTotalCalculationNoDates() throws IOException {
-        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData(LocationDataType.CONFIRMED_CASES)).thenReturn(LOCATION_DATA);
 
         final Map<String, String> filters = ImmutableMap.of("country", "US");
         final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyNewCasesReport(filters);
         assertThat(dailyNewCasesReport, is(notNullValue()));
         assertThat(dailyNewCasesReport.getTotal(), is(65777));
 
-        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
+        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData(LocationDataType.CONFIRMED_CASES);
     }
 
     @Test
     public void testDeltaCalculations() throws IOException, ParseException {
-        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData(LocationDataType.CONFIRMED_CASES)).thenReturn(LOCATION_DATA);
 
         final Map<String, String> filters = ImmutableMap.of(
                 "fromDate", "3/15/20",
@@ -151,12 +152,12 @@ public class ReportGeneratorTest extends TestBase {
                 DATE_FORMAT.parse("3/18/20"), 1362,
                 DATE_FORMAT.parse("3/19/20"), 5894)));
 
-        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
+        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData(LocationDataType.CONFIRMED_CASES);
     }
 
     @Test
     public void testAggregatesWhenStateNotFiltered() throws IOException, ParseException {
-        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData()).thenReturn(LOCATION_DATA);
+        when(mockJohnsHopkinsCovid19Adapter.getAllLocationData(LocationDataType.CONFIRMED_CASES)).thenReturn(LOCATION_DATA);
 
         final Map<String, String> filters = ImmutableMap.of(
                 "fromDate", "3/15/20",
@@ -177,6 +178,6 @@ public class ReportGeneratorTest extends TestBase {
                 DATE_FORMAT.parse("3/18/20"), 116,
                 DATE_FORMAT.parse("3/19/20"), 113)));
 
-        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData();
+        verify(mockJohnsHopkinsCovid19Adapter, times(1)).getAllLocationData(LocationDataType.CONFIRMED_CASES);
     }
 }

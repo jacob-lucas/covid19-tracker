@@ -9,6 +9,7 @@ import com.jacoblucas.covid19tracker.models.ImmutableWorldDataSummaryReport;
 import com.jacoblucas.covid19tracker.models.WorldDataSummaryReport;
 import com.jacoblucas.covid19tracker.models.jhu.ImmutableLocation;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
+import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 import com.jacoblucas.covid19tracker.models.jhu.LocationSummary;
 import com.jacoblucas.covid19tracker.reports.jhu.filters.CountryFilter;
 import com.jacoblucas.covid19tracker.reports.jhu.filters.DateRangeFilter;
@@ -34,8 +35,8 @@ public class ReportGenerator {
         this.johnsHopkinsCovid19Adapter = johnsHopkinsCovid19Adapter;
     }
 
-    public WorldDataSummaryReport generateWorldDataSummary() throws IOException {
-        final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData();
+    public WorldDataSummaryReport generateWorldDataSummary(final LocationDataType locationDataType) throws IOException {
+        final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData(locationDataType);
         final Map<String, List<Location>> locationsByCountry = allLocationData.stream()
                 .collect(Collectors.groupingBy(Location::getCountry));
 
@@ -53,7 +54,7 @@ public class ReportGenerator {
     }
 
     public DailyNewCasesReport generateDailyNewCasesReport(final Map<String, String> filters) throws IOException {
-        final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData();
+        final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData(LocationDataType.CONFIRMED_CASES);
         final List<Location> filteredLocations = filter(allLocationData, filters);
 
         final List<Location> dailyNewCases = getConfirmedCaseDeltas(filteredLocations);

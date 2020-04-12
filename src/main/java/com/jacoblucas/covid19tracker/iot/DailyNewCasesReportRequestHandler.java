@@ -23,8 +23,10 @@ public class DailyNewCasesReportRequestHandler extends RequestHandler implements
         log(context, "Received %s", request);
 
         final HttpClient httpClient = new HttpClient();
-        final String tsdUrl = new Environment().get("TSD_URL");
-        final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter = new JohnsHopkinsCovid19Adapter(httpClient, tsdUrl);
+        final String dataLocation = new Environment().get("DATA_LOCATION");
+        final String tsdFile = new Environment().get("TSD_FILE");
+        final String deathsFile = new Environment().get("DEATHS_FILE");
+        final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter = new JohnsHopkinsCovid19Adapter(httpClient, dataLocation, tsdFile, deathsFile);
         final ReportGenerator reportGenerator = new ReportGenerator(johnsHopkinsCovid19Adapter);
 
         final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyNewCasesReport(request.getFilters());
