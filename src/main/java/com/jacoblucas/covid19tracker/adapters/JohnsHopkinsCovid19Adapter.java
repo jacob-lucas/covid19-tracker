@@ -20,17 +20,20 @@ public class JohnsHopkinsCovid19Adapter {
     private final String dataLocation;
     private final String tsdFile;
     private final String deathsFile;
+    private final String recoveriesFile;
 
     public JohnsHopkinsCovid19Adapter(
             final HttpClient httpClient,
             final String dataLocation,
             final String tsdFile,
-            final String deathsFile
+            final String deathsFile,
+            final String recoveriesFile
     ) {
         this.httpClient = httpClient;
         this.dataLocation = dataLocation;
         this.tsdFile = tsdFile;
         this.deathsFile = deathsFile;
+        this.recoveriesFile = recoveriesFile;
     }
 
     public List<Location> getAllLocationData(final LocationDataType locationDataType) throws IOException {
@@ -38,9 +41,16 @@ public class JohnsHopkinsCovid19Adapter {
             return Location.parse(downloadRawTsdData(), locationDataType);
         } else if (locationDataType == LocationDataType.DEATHS) {
             return Location.parse(downloadRawDeathsData(), locationDataType);
+        } else if (locationDataType == LocationDataType.RECOVERIES) {
+            return Location.parse(downloadRawRecoveriesData(), locationDataType);
         } else {
             return ImmutableList.of();
         }
+    }
+
+    private ArrayList<String> downloadRawRecoveriesData() throws IOException {
+        final String raw = httpClient.get(dataLocation + recoveriesFile);
+        return new ArrayList<>(Arrays.asList(raw.split("\n")));
     }
 
     private ArrayList<String> downloadRawTsdData() throws IOException {

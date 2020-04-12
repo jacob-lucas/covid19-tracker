@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 public enum LocationDataType {
     CONFIRMED_CASES,
-    DEATHS;
+    DEATHS,
+    RECOVERIES;
 
     public static LocationDataType of(final String name) {
         return Arrays.stream(LocationDataType.values())

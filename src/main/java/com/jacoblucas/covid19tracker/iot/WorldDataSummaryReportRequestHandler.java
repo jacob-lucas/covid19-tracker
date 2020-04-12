@@ -20,7 +20,8 @@ public class WorldDataSummaryReportRequestHandler extends RequestHandler impleme
         final String dataLocation = new Environment().get("DATA_LOCATION");
         final String tsdFile = new Environment().get("TSD_FILE");
         final String deathsFile = new Environment().get("DEATHS_FILE");
-        final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter = new JohnsHopkinsCovid19Adapter(httpClient, dataLocation, tsdFile, deathsFile);
+        final String recoveriesFile = new Environment().get("RECOVERIES_FILE");
+        final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter = new JohnsHopkinsCovid19Adapter(httpClient, dataLocation, tsdFile, deathsFile, recoveriesFile);
 
         final ReportGenerator reportGenerator = new ReportGenerator(johnsHopkinsCovid19Adapter);
         final WorldDataSummaryReport report = reportGenerator.generateWorldDataSummary(LocationDataType.CONFIRMED_CASES);

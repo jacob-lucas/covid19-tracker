@@ -38,7 +38,7 @@ public class JohnsHopkinsCovid19AdapterTest {
 
     @Before
     public void setUp() {
-        adapter = new JohnsHopkinsCovid19Adapter(mockHttpClient, "", "", "");
+        adapter = new JohnsHopkinsCovid19Adapter(mockHttpClient, "", "", "", "");
     }
 
     @After
