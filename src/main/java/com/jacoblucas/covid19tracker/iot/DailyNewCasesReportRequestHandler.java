@@ -7,6 +7,7 @@ import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.http.HttpClient;
 import com.jacoblucas.covid19tracker.iot.requests.DailyNewCasesReportRequest;
 import com.jacoblucas.covid19tracker.models.DailyNewCasesReport;
+import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 import com.jacoblucas.covid19tracker.reports.jhu.ReportGenerator;
 import com.jacoblucas.covid19tracker.utils.Environment;
 
@@ -29,7 +30,8 @@ public class DailyNewCasesReportRequestHandler extends RequestHandler implements
         final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter = new JohnsHopkinsCovid19Adapter(httpClient, dataLocation, tsdFile, deathsFile);
         final ReportGenerator reportGenerator = new ReportGenerator(johnsHopkinsCovid19Adapter);
 
-        final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyNewCasesReport(request.getFilters());
+        final LocationDataType locationDataType = LocationDataType.of(request.getLocationDataType());
+        final DailyNewCasesReport dailyNewCasesReport = reportGenerator.generateDailyNewCasesReport(request.getFilters(), locationDataType);
         objectMapper.writeValue(output, dailyNewCasesReport);
 
         final long duration = Instant.now().toEpochMilli() - start.toEpochMilli();

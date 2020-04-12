@@ -53,8 +53,8 @@ public class ReportGenerator {
                 .build();
     }
 
-    public DailyNewCasesReport generateDailyNewCasesReport(final Map<String, String> filters) throws IOException {
-        final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData(LocationDataType.CONFIRMED_CASES);
+    public DailyNewCasesReport generateDailyNewCasesReport(final Map<String, String> filters, final LocationDataType locationDataType) throws IOException {
+        final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData(locationDataType);
         final List<Location> filteredLocations = filter(allLocationData, filters);
 
         final List<Location> dailyNewCases = getConfirmedCaseDeltas(filteredLocations);

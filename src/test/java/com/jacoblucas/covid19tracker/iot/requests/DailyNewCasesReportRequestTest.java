@@ -3,6 +3,7 @@ package com.jacoblucas.covid19tracker.iot.requests;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.TestBase;
+import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 import com.jacoblucas.covid19tracker.utils.InputReader;
 import org.junit.Test;
 
@@ -51,5 +52,26 @@ public class DailyNewCasesReportRequestTest extends TestBase {
                 .build();
 
         assertThat(request, is(expected));
+    }
+
+    @Test
+    public void defaultsToConfirmedCases() {
+        final DailyNewCasesReportRequest request = ImmutableDailyNewCasesReportRequest.builder().build();
+        assertThat(request.getLocationDataType(), is(LocationDataType.CONFIRMED_CASES.name()));
+    }
+
+    @Test
+    public void supportsLowerCaseLocationDataType() {
+        final DailyNewCasesReportRequest request = ImmutableDailyNewCasesReportRequest.builder()
+                .locationDataType("deaths")
+                .build();
+        assertThat(request.getLocationDataType(), is(LocationDataType.DEATHS.name().toLowerCase()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void throwsOnInvalidLocationDataType() {
+        final DailyNewCasesReportRequest request = ImmutableDailyNewCasesReportRequest.builder()
+                .locationDataType("invalid location data type")
+                .build();
     }
 }

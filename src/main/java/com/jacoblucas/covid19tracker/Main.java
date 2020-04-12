@@ -20,19 +20,19 @@ public class Main {
         final JohnsHopkinsCovid19Adapter adapter = new JohnsHopkinsCovid19Adapter(new HttpClient(), DATA_LOCATION, TSD_FILE, DEATHS_FILE);
         final ReportGenerator reportGenerator = new ReportGenerator(adapter);
         final DailyNewCasesReport australia = reportGenerator.generateDailyNewCasesReport(
-                ImmutableMap.of("fromDate", "3/15/20", "toDate", "3/19/20", "country", "Australia"));
+                ImmutableMap.of("fromDate", "3/15/20", "toDate", "3/19/20", "country", "Australia"), LocationDataType.CONFIRMED_CASES);
         System.out.println(australia);
 
         final DailyNewCasesReport italy = reportGenerator.generateDailyNewCasesReport(
-                ImmutableMap.of("country", "Italy"));
+                ImmutableMap.of("country", "Italy"), LocationDataType.CONFIRMED_CASES);
         System.out.println(italy);
 
         final DailyNewCasesReport usa = reportGenerator.generateDailyNewCasesReport(
-                ImmutableMap.of("country", "US"));
+                ImmutableMap.of("country", "US"), LocationDataType.CONFIRMED_CASES);
         System.out.println(usa);
 
         final DailyNewCasesReport china = reportGenerator.generateDailyNewCasesReport(
-                ImmutableMap.of("country", "China"));
+                ImmutableMap.of("country", "China"), LocationDataType.CONFIRMED_CASES);
         System.out.println(china);
 
         final WorldDataSummaryReport casesReport = reportGenerator.generateWorldDataSummary(LocationDataType.CONFIRMED_CASES);
