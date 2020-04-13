@@ -1,11 +1,14 @@
 package com.jacoblucas.covid19tracker.reports.jhu;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.models.DailyNewCasesReport;
 import com.jacoblucas.covid19tracker.models.ImmutableDailyNewCasesReport;
+import com.jacoblucas.covid19tracker.models.ImmutableTrend;
 import com.jacoblucas.covid19tracker.models.ImmutableWorldDataSummaryReport;
+import com.jacoblucas.covid19tracker.models.Trend;
 import com.jacoblucas.covid19tracker.models.WorldDataSummaryReport;
 import com.jacoblucas.covid19tracker.models.jhu.ImmutableLocation;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
@@ -20,8 +23,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,17 +58,33 @@ public class ReportGenerator {
                 .build();
     }
 
-    public DailyNewCasesReport generateDailyNewCasesReport(final Map<String, String> filters, final LocationDataType locationDataType) throws IOException {
+    public DailyNewCasesReport generateDailyNewCasesReport(
+            final Map<String, String> filters,
+            final LocationDataType locationDataType
+    ) throws IOException {
         final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData(locationDataType);
         final List<Location> filteredLocations = filter(allLocationData, filters);
 
         final List<Location> dailyNewCases = getConfirmedCaseDeltas(filteredLocations);
 
         final int total = dailyNewCases.stream()
-                .map(loc -> loc.getDateCountData().values()
-                        .stream()
-                        .reduce(0, Integer::sum))
+                .map(Location::getTotal)
                 .reduce(0, Integer::sum);
+
+        final Instant yesterdayMidnight = Instant.now().truncatedTo(ChronoUnit.DAYS).minus(1, ChronoUnit.DAYS);
+        final Map<String, Trend> trendMap;
+        if (locationDataType == LocationDataType.CONFIRMED_CASES) {
+            final Map<String, Trend> allTrends = calculateTrendsToDate(new Date(yesterdayMidnight.toEpochMilli()), allLocationData);
+            if (filters.containsKey("country")) {
+                trendMap = allTrends.entrySet().stream()
+                        .filter(e -> e.getValue().getLocation().equals(filters.get("country")))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            } else {
+                trendMap = allTrends;
+            }
+        } else {
+            trendMap = ImmutableMap.of();
+        }
 
         return ImmutableDailyNewCasesReport.builder()
                 .reportGeneratedAt(Instant.now().toString())
@@ -71,7 +92,50 @@ public class ReportGenerator {
                 .filters(filters)
                 .total(total)
                 .dailyNewCases(dailyNewCases)
+                .countryTrends(trendMap)
                 .build();
+    }
+
+    private Map<String, Trend> calculateTrendsToDate(final Date endDate, final List<Location> allLocationData) {
+        final Map<Integer, List<Location>> windowData = new HashMap<>();
+        final int daysPerWindow = 1;
+        final int windows = 7;
+        for (int i = windows-1; i >= 0; i--) {
+            final Instant toDate = endDate.toInstant().truncatedTo(ChronoUnit.DAYS).minus(i*daysPerWindow, ChronoUnit.DAYS);
+            final Instant fromDate = toDate.minus(7, ChronoUnit.DAYS);
+
+            final Map<String, String> filters = ImmutableMap.of(
+                    "fromDate", DATE_FORMAT.format(new Date(fromDate.toEpochMilli())),
+                    "toDate", DATE_FORMAT.format(new Date(toDate.toEpochMilli())));
+
+            final List<Location> filteredLocations = filter(allLocationData, filters);
+
+            final List<Location> confirmedCaseDeltas = getConfirmedCaseDeltas(filteredLocations);
+
+            windowData.put(i, confirmedCaseDeltas);
+        }
+
+        return Maps.uniqueIndex(windowData.values().stream()
+                .flatMap(List::stream)
+                .map(Location::getCountry)
+                .distinct()
+                .map(country -> {
+                    final List<Integer> counts = new ArrayList<>();
+                    for (int i=0; i<windows; i++) {
+                        final Integer count = windowData.get(i).stream()
+                                .filter(ls -> ls.getCountry().equals(country))
+                                .findFirst()
+                                .map(Location::getTotal)
+                                .orElse(0);
+                        counts.add(count);
+                    }
+                    return ImmutableTrend.builder()
+                            .location(country)
+                            .windows(counts)
+                            .windowSize(daysPerWindow)
+                            .build();
+                })
+                .collect(Collectors.toList()), Trend::getLocation);
     }
 
     final List<Location> filter(final List<Location> locationData, final Map<String, String> filters) {

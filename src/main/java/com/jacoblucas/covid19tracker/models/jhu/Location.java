@@ -60,6 +60,15 @@ public abstract class Location {
     @JsonIgnore
     @Value.Derived
     @Value.Auxiliary
+    public int getTotal() {
+        return getDateCountData().values()
+                .stream()
+                .reduce(0, Integer::sum);
+    }
+
+    @JsonIgnore
+    @Value.Derived
+    @Value.Auxiliary
     public Date getUpdatedAt() {
         return getDateCountData().keySet().stream().max(Comparator.naturalOrder()).orElse(new Date());
     }

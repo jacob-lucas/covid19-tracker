@@ -38,7 +38,15 @@ public abstract class LocationSummary {
         final Map<Date, Integer> dateCountData = location.getDateCountData();
         final Optional<Date> mostRecent = dateCountData.keySet().stream().max(Comparator.naturalOrder());
         if (!mostRecent.isPresent()) {
-            throw new IllegalArgumentException(String.format("Missing date count data - cannot summarise %s", location));
+            return ImmutableLocationSummary.builder()
+                    .latitude(location.getLatitude())
+                    .longitude(location.getLongitude())
+                    .country(location.getCountry())
+                    .state(location.getState())
+                    .locationDataType(location.getLocationDataType())
+                    .count(0)
+                    .updatedAt(new Date())
+                    .build();
         }
 
         final Date updatedAt = mostRecent.get();

@@ -1,6 +1,7 @@
 package com.jacoblucas.covid19tracker.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.ImmutableMap;
 import com.jacoblucas.covid19tracker.models.jhu.Location;
 import org.immutables.value.Value;
 
@@ -23,6 +24,11 @@ public abstract class DailyNewCasesReport {
     public abstract int getTotal();
 
     public abstract List<Location> getDailyNewCases();
+
+    @Value.Default
+    public Map<String, Trend> getCountryTrends() {
+        return ImmutableMap.of();
+    }
 
     @Value.Derived
     public String getUpdatedDate() {
