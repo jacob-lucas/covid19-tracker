@@ -16,6 +16,7 @@ import com.jacoblucas.covid19tracker.models.jhu.LocationDataType;
 import com.jacoblucas.covid19tracker.models.jhu.LocationSummary;
 import com.jacoblucas.covid19tracker.reports.jhu.filters.CountryFilter;
 import com.jacoblucas.covid19tracker.reports.jhu.filters.DateRangeFilter;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -71,7 +72,7 @@ public class ReportGenerator {
                 .map(Location::getTotal)
                 .reduce(0, Integer::sum);
 
-        Date trendThreshold = new Date(Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli());
+        Date trendThreshold = DateUtils.addDays(new Date(), -1);
         if (filters.containsKey("toDate")) {
             try {
                 trendThreshold = DATE_FORMAT.parse(filters.get("toDate"));
@@ -109,12 +110,12 @@ public class ReportGenerator {
         final int daysPerWindow = 1;
         final int windows = 7;
         for (int i = windows-1; i >= 0; i--) {
-            final Instant toDate = endDate.toInstant().truncatedTo(ChronoUnit.DAYS).minus(i*daysPerWindow, ChronoUnit.DAYS);
-            final Instant fromDate = toDate.minus(daysPerWindow, ChronoUnit.DAYS);
+            final Date to = DateUtils.addDays(endDate, -1 * i * daysPerWindow);
+            final Date from = DateUtils.addDays(to, -1 * daysPerWindow);
 
             final Map<String, String> filters = ImmutableMap.of(
-                    "fromDate", DATE_FORMAT.format(new Date(fromDate.toEpochMilli())),
-                    "toDate", DATE_FORMAT.format(new Date(toDate.toEpochMilli())));
+                    "fromDate", DATE_FORMAT.format(from),
+                    "toDate", DATE_FORMAT.format(to));
 
             final List<Location> filteredLocations = filter(allLocationData, filters);
 
@@ -126,14 +127,14 @@ public class ReportGenerator {
                             final Map<String, Integer> withinRangeData = new HashMap<>();
                             for (Map.Entry<String, Integer> entry : rawCountData.entrySet()) {
                                 final Date date = DATE_FORMAT.parse(entry.getKey());
-                                if (date.toInstant().isAfter(fromDate) && date.toInstant().isBefore(toDate)) {
+                                if (date.compareTo(from) >= 0 && date.compareTo(to) < 0) {
                                     withinRangeData.put(entry.getKey(), entry.getValue());
                                 }
                             }
                             return ImmutableLocation.copyOf(loc)
                                     .withRawCountData(withinRangeData);
                         } catch (final Exception e) {
-                            // shouldn't happen
+                            System.out.println(e.getMessage());
                             return loc;
                         }
                     })

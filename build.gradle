@@ -22,6 +22,7 @@ repositories {
 
 dependencies {
     compile "org.immutables:value:${immutablesVersion}"
+    compile "org.apache.commons:commons-lang3:${apacheCommonsLangVersion}"
     compile "org.apache.httpcomponents:fluent-hc:${apacheHttpVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
     compile "com.amazonaws:aws-lambda-java-core:${awsLambdaVersion}"
