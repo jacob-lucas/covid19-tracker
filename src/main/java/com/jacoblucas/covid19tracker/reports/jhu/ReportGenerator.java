@@ -83,7 +83,7 @@ public class ReportGenerator {
 
         final Map<String, Trend> trendMap;
         if (locationDataType == LocationDataType.CONFIRMED_CASES) {
-            final Map<String, Trend> allTrends = calculateTrendsToDate(trendThreshold, allLocationData);
+            final Map<String, Trend> allTrends = calculateTrendsToDate(trendThreshold, filteredLocations);
             if (filters.containsKey("country")) {
                 trendMap = allTrends.entrySet().stream()
                         .filter(e -> e.getValue().getLocation().equals(filters.get("country")))
