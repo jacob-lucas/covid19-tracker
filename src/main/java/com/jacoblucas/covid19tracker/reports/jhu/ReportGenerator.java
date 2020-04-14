@@ -71,10 +71,18 @@ public class ReportGenerator {
                 .map(Location::getTotal)
                 .reduce(0, Integer::sum);
 
-        final Instant yesterdayMidnight = Instant.now().truncatedTo(ChronoUnit.DAYS).minus(1, ChronoUnit.DAYS);
+        Date trendThreshold = new Date(Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli());
+        if (filters.containsKey("toDate")) {
+            try {
+                trendThreshold = DATE_FORMAT.parse(filters.get("toDate"));
+            } catch (ParseException e) {
+                // do nothing
+            }
+        }
+
         final Map<String, Trend> trendMap;
         if (locationDataType == LocationDataType.CONFIRMED_CASES) {
-            final Map<String, Trend> allTrends = calculateTrendsToDate(new Date(yesterdayMidnight.toEpochMilli()), allLocationData);
+            final Map<String, Trend> allTrends = calculateTrendsToDate(trendThreshold, allLocationData);
             if (filters.containsKey("country")) {
                 trendMap = allTrends.entrySet().stream()
                         .filter(e -> e.getValue().getLocation().equals(filters.get("country")))
@@ -102,7 +110,7 @@ public class ReportGenerator {
         final int windows = 7;
         for (int i = windows-1; i >= 0; i--) {
             final Instant toDate = endDate.toInstant().truncatedTo(ChronoUnit.DAYS).minus(i*daysPerWindow, ChronoUnit.DAYS);
-            final Instant fromDate = toDate.minus(7, ChronoUnit.DAYS);
+            final Instant fromDate = toDate.minus(daysPerWindow, ChronoUnit.DAYS);
 
             final Map<String, String> filters = ImmutableMap.of(
                     "fromDate", DATE_FORMAT.format(new Date(fromDate.toEpochMilli())),
@@ -110,7 +118,26 @@ public class ReportGenerator {
 
             final List<Location> filteredLocations = filter(allLocationData, filters);
 
-            final List<Location> confirmedCaseDeltas = getConfirmedCaseDeltas(filteredLocations);
+            final List<Location> confirmedCaseDeltas = getConfirmedCaseDeltas(filteredLocations)
+                    .stream()
+                    .map(loc -> {
+                        try {
+                            final Map<String, Integer> rawCountData = loc.getRawCountData();
+                            final Map<String, Integer> withinRangeData = new HashMap<>();
+                            for (Map.Entry<String, Integer> entry : rawCountData.entrySet()) {
+                                final Date date = DATE_FORMAT.parse(entry.getKey());
+                                if (date.toInstant().isAfter(fromDate) && date.toInstant().isBefore(toDate)) {
+                                    withinRangeData.put(entry.getKey(), entry.getValue());
+                                }
+                            }
+                            return ImmutableLocation.copyOf(loc)
+                                    .withRawCountData(withinRangeData);
+                        } catch (final Exception e) {
+                            // shouldn't happen
+                            return loc;
+                        }
+                    })
+                    .collect(Collectors.toList());
 
             windowData.put(i, confirmedCaseDeltas);
         }
