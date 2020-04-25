@@ -59,6 +59,24 @@ public class ReportGenerator {
                 .build();
     }
 
+    public WorldDataSummaryReport generateUSDataSummary() throws IOException {
+        final List<Location> usLocationData = johnsHopkinsCovid19Adapter.getUSLocationData();
+        final Map<String, List<Location>> locationsByState = usLocationData.stream()
+                .collect(Collectors.groupingBy(loc -> loc.getState().orElse("unknown")));
+
+        final List<LocationSummary> summaries = locationsByState.values()
+                .stream()
+                .map(Location::aggregateByState)
+                .map(LocationSummary::generate)
+                .sorted(Comparator.comparing(ls -> ls.getState().orElse("unknown")))
+                .collect(Collectors.toList());
+
+        return ImmutableWorldDataSummaryReport.builder()
+                .reportGeneratedAt(Instant.now().toString())
+                .locationSummaries(summaries)
+                .build();
+    }
+
     public DailyNewCasesReport generateDailyNewCasesReport(
             final Map<String, String> filters,
             final LocationDataType locationDataType

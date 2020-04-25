@@ -2,6 +2,7 @@ package com.jacoblucas.covid19tracker.iot;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.jacoblucas.covid19tracker.adapters.JohnsHopkinsCovid19Adapter;
 import com.jacoblucas.covid19tracker.http.HttpClient;
 import com.jacoblucas.covid19tracker.models.WorldDataSummaryReport;
@@ -12,6 +13,7 @@ import com.jacoblucas.covid19tracker.utils.Environment;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 public class WorldDataSummaryReportRequestHandler extends RequestHandler implements RequestStreamHandler {
     @Override
@@ -23,8 +25,20 @@ public class WorldDataSummaryReportRequestHandler extends RequestHandler impleme
         final String recoveriesFile = new Environment().get("RECOVERIES_FILE");
         final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter = new JohnsHopkinsCovid19Adapter(httpClient, dataLocation, tsdFile, deathsFile, recoveriesFile);
 
+        final Map<String, Object> requestProperties = objectMapper.readValue(input, new TypeReference<Map<String, Object>>(){});
         final ReportGenerator reportGenerator = new ReportGenerator(johnsHopkinsCovid19Adapter);
-        final WorldDataSummaryReport report = reportGenerator.generateWorldDataSummary(LocationDataType.CONFIRMED_CASES);
+        final WorldDataSummaryReport report;
+
+        if (requestProperties.containsKey("country")) {
+            final String country = requestProperties.get("country").toString();
+            if (!country.toUpperCase().equals("US")) {
+                throw new IllegalArgumentException("Unsupported country: " + country);
+            }
+            report = reportGenerator.generateUSDataSummary();
+        } else {
+            report = reportGenerator.generateWorldDataSummary(LocationDataType.CONFIRMED_CASES);
+        }
+
         objectMapper.writeValue(output, report);
     }
 }
