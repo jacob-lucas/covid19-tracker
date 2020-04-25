@@ -37,6 +37,8 @@ public abstract class Location {
 
     public abstract Optional<String> getState();
 
+    public abstract Optional<String> getCounty();
+
     public abstract LocationDataType getLocationDataType();
 
     public abstract Map<String, Integer> getRawCountData();
@@ -71,6 +73,44 @@ public abstract class Location {
     @Value.Auxiliary
     public Date getUpdatedAt() {
         return getDateCountData().keySet().stream().max(Comparator.naturalOrder()).orElse(new Date());
+    }
+
+    public static Location aggregateByState(final List<Location> locations) {
+        if (locations == null || locations.isEmpty()) {
+            throw new IllegalArgumentException("Must provided a non-null/non-empty list for aggregation");
+        }
+
+        final List<String> states = locations.stream()
+                .map(Location::getState)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .distinct()
+                .collect(Collectors.toList());
+        if (states.size() > 1) {
+            throw new IllegalArgumentException("Cannot aggregate locations from different states");
+        }
+
+        final List<LocationDataType> locationDataType = locations.stream()
+                .map(Location::getLocationDataType)
+                .distinct()
+                .collect(Collectors.toList());
+
+        final List<Map<String, Integer>> rawDataMaps = locations.stream()
+                .map(Location::getRawCountData)
+                .collect(Collectors.toList());
+
+        final Map<String, Integer> aggregatedData = rawDataMaps.stream()
+                .flatMap(m -> m.entrySet().stream())
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingInt(Map.Entry::getValue)));
+
+        return ImmutableLocation.builder()
+                .latitude(locations.get(0).getLatitude())
+                .longitude(locations.get(0).getLongitude())
+                .country(locations.get(0).getCountry())
+                .state(states.get(0))
+                .locationDataType(locationDataType.get(0))
+                .rawCountData(aggregatedData)
+                .build();
     }
 
     public static Location aggregateByCountry(final List<Location> locations) {
@@ -112,7 +152,7 @@ public abstract class Location {
         final String[] headers = rawData.remove(0).split(DELIMITER);
         return rawData.stream()
                 .map(str -> str.split(DELIMITER))
-                .map(arr -> Location.parse(headers, arr, locationDataType))
+                .map(arr -> parse(headers, arr, locationDataType))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -160,6 +200,46 @@ public abstract class Location {
             builder.rawCountData(data);
 
             return Optional.of(builder.build());
+        } catch (final Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public static List<Location> parseDetailed(final List<String> rawData, final LocationDataType locationDataType) {
+        final String[] headers = rawData.remove(0).split(DELIMITER);
+        return rawData.stream()
+                .map(str -> str.split(DELIMITER))
+                .map(arr -> parseDetailed(headers, arr, locationDataType))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    static Optional<Location> parseDetailed(final String[] headers, final String[] arr, final LocationDataType locationDataType) {
+        try {
+            int countyIdx = 5;
+            int stateIdx = 6;
+            int countryIdx = 7;
+            int latIdx = 8;
+            int longIdx = 9;
+            int dataIdx = arr.length - (headers.length-11);
+            int offset = dataIdx - 11;
+
+            final Map<String, Integer> data = Maps.newTreeMap();
+            for (int i = dataIdx; i < arr.length; i++) {
+                final int count = Integer.parseInt(arr[i].trim());
+                data.put(headers[i-offset], count);
+            }
+
+            return Optional.of(ImmutableLocation.builder()
+                    .country(arr[countryIdx])
+                    .state(arr[stateIdx])
+                    .county(arr[countyIdx])
+                    .latitude(Float.parseFloat(arr[latIdx]))
+                    .longitude(Float.parseFloat(arr[longIdx]))
+                    .locationDataType(locationDataType)
+                    .rawCountData(data)
+                    .build());
         } catch (final Exception e) {
             return Optional.empty();
         }

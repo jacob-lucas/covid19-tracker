@@ -48,6 +48,10 @@ public class JohnsHopkinsCovid19Adapter {
         }
     }
 
+    public List<Location> getUSLocationData() throws IOException {
+        return Location.parseDetailed(download("time_series_covid19_confirmed_US.csv"), LocationDataType.CONFIRMED_CASES);
+    }
+
     private ArrayList<String> downloadRawRecoveriesData() throws IOException {
         final String raw = httpClient.get(dataLocation + recoveriesFile);
         return new ArrayList<>(Arrays.asList(raw.split("\n")));
@@ -60,6 +64,12 @@ public class JohnsHopkinsCovid19Adapter {
 
     private ArrayList<String> downloadRawDeathsData() throws IOException {
         final String raw = httpClient.get(dataLocation + deathsFile);
+        return new ArrayList<>(Arrays.asList(raw.split("\n")));
+    }
+
+    // TODO: clean up above to all use this function instead
+    private ArrayList<String> download(final String file) throws IOException {
+        final String raw = httpClient.get(dataLocation + file);
         return new ArrayList<>(Arrays.asList(raw.split("\n")));
     }
 }
