@@ -30,10 +30,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ReportGenerator {
     static final DateFormat DATE_FORMAT = new SimpleDateFormat(JohnsHopkinsCovid19Adapter.DATE_FORMAT);
+
+    private static final String DEFAULT_RESOLUTION = "countries";
 
     private final JohnsHopkinsCovid19Adapter johnsHopkinsCovid19Adapter;
 
@@ -81,9 +84,15 @@ public class ReportGenerator {
             final Map<String, String> filters,
             final LocationDataType locationDataType
     ) throws IOException {
-        final List<Location> allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData(locationDataType);
-        final List<Location> filteredLocations = filter(allLocationData, filters);
+        final boolean hasStateFilter = filters.getOrDefault("resolution", DEFAULT_RESOLUTION).equals("provinces");
+        final List<Location> allLocationData;
+        if (hasStateFilter) {
+            allLocationData = johnsHopkinsCovid19Adapter.getUSLocationData();
+        } else {
+            allLocationData = johnsHopkinsCovid19Adapter.getAllLocationData(locationDataType);
+        }
 
+        final List<Location> filteredLocations = filter(allLocationData, filters);
         final List<Location> dailyNewCases = getConfirmedCaseDeltas(filteredLocations);
 
         final int total = dailyNewCases.stream()
@@ -100,7 +109,7 @@ public class ReportGenerator {
         }
 
         final Map<String, Trend> trendMap;
-        if (locationDataType == LocationDataType.CONFIRMED_CASES) {
+        if (locationDataType == LocationDataType.CONFIRMED_CASES && !hasStateFilter) {
             final Map<String, Trend> allTrends = calculateTrendsToDate(trendThreshold, filteredLocations);
             if (filters.containsKey("country")) {
                 trendMap = allTrends.entrySet().stream()
@@ -186,7 +195,7 @@ public class ReportGenerator {
 
     final List<Location> filter(final List<Location> locationData, final Map<String, String> filters) {
         final String country = filters.get("country");
-        final String state = filters.get("state");
+        final String resolution = filters.getOrDefault("resolution", DEFAULT_RESOLUTION);
         final String fromDateStr = filters.get("fromDate");
         final String toDateStr = filters.get("toDate");
 
@@ -208,9 +217,19 @@ public class ReportGenerator {
                 .filter(new CountryFilter(country))
                 .collect(Collectors.toList());
 
-        if (state == null && country != null && filtered.size() > 1) {
+        if (resolution.equals(DEFAULT_RESOLUTION) && country != null && filtered.size() > 1) {
             // aggregate by country if multiple locations (states) are reporting data
             return ImmutableList.of(Location.aggregateByCountry(filtered));
+        } else if (resolution.equals("provinces") && country != null && filtered.size() > 1) {
+            // aggregate by state if provided
+            final Function<Location, String> getState = loc -> loc.getState().orElse("UNKNOWN");
+            return filtered.stream()
+                    .collect(Collectors.groupingBy(getState))
+                    .values()
+                    .stream()
+                    .map(Location::aggregateByState)
+                    .sorted(Comparator.comparing(getState))
+                    .collect(Collectors.toList());
         } else {
             return filtered;
         }
