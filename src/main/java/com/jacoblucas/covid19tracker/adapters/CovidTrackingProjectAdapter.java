@@ -48,10 +48,16 @@ public class CovidTrackingProjectAdapter {
     }
 
     public List<UnitedStatesSummary> getHistoricUnitedStatesSummary() throws IOException {
+        return getHistoricUnitedStatesSummary(Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    public List<UnitedStatesSummary> getHistoricUnitedStatesSummary(final int from, final int to) throws IOException {
         final String response = httpClient.get(dataLocation + US_HISTORIC_URL);
 
         final List<UnitedStatesSummary> summary = objectMapper.readValue(response, new TypeReference<List<UnitedStatesSummary>>() {});
+
         return summary.stream()
+                .filter(s -> s.getDate() >= from && s.getDate() <= to)
                 .sorted(Comparator.comparing(UnitedStatesSummary::getDate))
                 .collect(Collectors.toList());
     }
@@ -89,25 +95,25 @@ public class CovidTrackingProjectAdapter {
 
         final List<StateSummary> stateResultsSummaries = objectMapper.readValue(response, new TypeReference<List<StateSummary>>() {});
 
-        return sortAndFilter(stateResultsSummaries).stream()
+        return stateResultsSummaries.stream()
+                .sorted(Comparator.comparing(StateSummary::getDate))
+                .sorted(Comparator.comparing(StateSummary::getState))
                 .collect(Collectors.groupingBy(keyExtractor));
     }
 
     public List<StateSummary> getHistoricValuesForState(final String state) throws IOException {
+        return getHistoricValuesForState(state, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    public List<StateSummary> getHistoricValuesForState(final String state, final int from, final int to) throws IOException {
         final String response = httpClient.get(String.format(dataLocation + SPECIFIC_STATE_HISTORIC_URL, state.toLowerCase()));
 
-        return sortAndFilter(objectMapper.readValue(response, new TypeReference<List<StateSummary>>() {}));
-    }
+        final List<StateSummary> stateResultsSummaries = objectMapper.readValue(response, new TypeReference<List<StateSummary>>() {});
 
-    private List<StateSummary> sortAndFilter(final List<StateSummary> stateResultsSummaries) {
-        return sortAndFilter(stateResultsSummaries, Integer.MIN_VALUE, Integer.MAX_VALUE);
-    }
-
-    private List<StateSummary> sortAndFilter(final List<StateSummary> stateResultsSummaries, final int from, final int to) {
         return stateResultsSummaries.stream()
                 .filter(s -> s.getDate() >= from && s.getDate() <= to)
                 .sorted(Comparator.comparing(StateSummary::getDate))
-                .sorted(Comparator.comparing(StateSummary::getState))
                 .collect(Collectors.toList());
     }
+
 }
